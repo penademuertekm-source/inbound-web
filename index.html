@@ -25,15 +25,18 @@ html{scroll-behavior:smooth}
 section[id]{scroll-margin-top:63px}
 @media (max-width:599px){section[id]{scroll-margin-top:110px}}
 body{margin:0;background:var(--ink);color:var(--white);font-family:var(--font);font-size:16px;line-height:1.55;font-stretch:100%;-webkit-font-smoothing:antialiased}
-img{display:block;max-width:100%}
+img{display:block;max-width:100%;height:auto}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--white);outline-offset:3px}
 .light :focus-visible{outline-color:var(--ink)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* type roles */
+/* type roles: display (hero) · título L (secciones principales) · título M (secundarias) · h3 único · dato */
 .display{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:.88;margin:0}
 .h2{font-size:clamp(38px,6.4vw,96px)}
+.h2-m{font-size:clamp(30px,4.2vw,60px);line-height:.92}
+.h3{margin:0;font-stretch:125%;font-weight:850;font-size:clamp(21px,2vw,28px);text-transform:uppercase;line-height:1}
+.data{font-stretch:62%;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;font-variant-numeric:tabular-nums}
 .label{font-stretch:72%;font-weight:600;font-size:14px;letter-spacing:.02em}
 .lede{font-size:clamp(18px,1.6vw,21px);max-width:52ch;margin:0}
 .muted{color:var(--gray)}
@@ -52,37 +55,42 @@ a{color:inherit}
 .btn-solid:hover{opacity:.8}
 .btn-ghost:hover{background:rgba(133,133,133,.2)}
 
-/* header */
-.site-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:var(--s4);padding:14px var(--gutter);background:var(--ink);border-bottom:1px solid var(--line-light)}
-.logo{font-stretch:125%;font-weight:900;font-size:20px;letter-spacing:-.01em;text-decoration:none}
-.logo sup{font-size:.5em;font-weight:600}
-.nav{display:flex;gap:var(--s3);flex:1}
-.nav a,.ig-link{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap;border-bottom:1.5px solid transparent}
-.nav a:hover,.ig-link:hover{border-color:currentColor}
-.logo{display:inline-flex;align-items:center;min-height:44px}
-/* móvil: la nav baja a su propia fila para que se vean las cuatro secciones */
-@media (max-width:599px){
-  .site-header{flex-wrap:wrap;row-gap:0;padding-bottom:4px}
-  .nav{order:3;flex-basis:100%;justify-content:space-between}
-  .ig-link{margin-left:auto}
+/* header: una fila; en móvil la nav es un panel a pantalla completa */
+.site-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:var(--s3);padding:10px var(--gutter);background:var(--ink);border-bottom:1px solid var(--line-light)}
+.logo{display:inline-flex;align-items:center;min-height:44px;color:var(--white)}
+.logo svg{width:132px;height:auto}
+.nav{display:flex;gap:var(--s3);margin-left:auto;align-items:center}
+.nav a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap;border-bottom:1.5px solid transparent}
+.nav a:hover{border-color:currentColor}
+.header-cta{min-height:40px;padding:0 18px;font-size:15px}
+.menu-btn{display:none}
+@media (max-width:479px){.header-cta{display:none}.menu-btn{margin-left:auto}}
+@media (max-width:767px){
+  .logo svg{width:110px}
+  .header-cta{margin-left:auto}
+  .menu-btn{display:inline-flex;min-height:40px;padding:0 16px;font-size:15px}
+  .nav{position:fixed;inset:0;z-index:-1;flex-direction:column;align-items:flex-start;justify-content:center;gap:var(--s2);padding:var(--gutter);background:var(--ink);visibility:hidden;opacity:0;transition:opacity .2s}
+  .nav a{font-stretch:125%;font-weight:900;font-size:clamp(36px,11vw,56px);text-transform:uppercase;letter-spacing:-.02em}
+  .site-header.open .nav{visibility:visible;opacity:1}
 }
 .skip{position:absolute;left:var(--gutter);top:-100px;z-index:20;background:var(--white);color:var(--ink);padding:12px 18px;border-radius:999px;font-weight:700}
 .skip:focus{top:8px}
 
-/* hero */
-.hero{padding:var(--s6) var(--gutter) 0;overflow:hidden}
-.hero-grid{display:grid;gap:var(--s6);align-items:end}
-.hero-copy{display:grid;gap:var(--s3);align-content:end;padding-bottom:var(--s4)}
-.hero-copy .claim{font-stretch:125%;font-weight:800;font-size:clamp(30px,3.6vw,52px);line-height:1;letter-spacing:-.015em;margin:0;max-width:14ch}
-.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:var(--s2)}
-.hero-photo{aspect-ratio:3/4;object-fit:cover;width:100%;max-height:max(320px,calc(100svh - 14.5vw - 230px));filter:grayscale(.35) contrast(1.05)}
-.hero{container-type:inline-size}
-.wordmark{font-size:calc(100cqi / 6.35);white-space:nowrap;margin:var(--s3) 0 0;padding-bottom:.02em;animation:stretch .9s cubic-bezier(.2,.7,.1,1) .15s both;contain:layout}
-@keyframes stretch{from{font-stretch:62%;opacity:0}30%{opacity:1}to{font-stretch:125%}}
-.hero-specs{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);padding:var(--s2) 0 var(--s3);border-top:1px solid var(--line-light)}
-@media (min-width:860px){
-  .hero-grid{grid-template-columns:1fr minmax(320px,38%)}
+/* hero partido: texto a la izquierda, arte "Destello" a la derecha (capas listas para el parallax de la Fase 2) */
+.hero{display:grid;gap:var(--s4);min-height:calc(100svh - 61px);padding:var(--s6) var(--gutter) var(--s4);overflow:hidden}
+.hero-art{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;object-position:60% 55%;mix-blend-mode:lighten} /* lighten: el negro puro del arte toma el #080808 de la página */
+.hero-copy{display:grid;gap:var(--s3);align-content:center}
+.hero h1{font-size:clamp(44px,7vw,112px);max-width:9ch}
+@media (max-width:599px){.hero h1{font-size:9.2vw}} /* "HEAVYWEIGHT" (11 letras) debe caber a 320–599 px */
+@media (min-width:960px){
+  .hero{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:1fr auto;column-gap:var(--s4)}
+  .hero-art{grid-column:2;grid-row:1;height:100%;aspect-ratio:auto;max-height:calc(100svh - 200px);align-self:center}
+  .hero-copy{grid-column:1;grid-row:1}
+  .hero-data{grid-column:1 / -1}
 }
+.hero-actions{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center}
+.hero-link{font-weight:700;text-underline-offset:4px;min-height:44px;display:inline-flex;align-items:center}
+.hero-data{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s6);margin:0;padding:var(--s2) 0 0;border-top:1px solid var(--line-light);list-style:none;font-size:clamp(14px,1.2vw,18px)}
 
 /* configurator */
 .config{display:grid;gap:var(--s6)}
@@ -118,38 +126,47 @@ a{color:inherit}
   .preview{position:sticky;top:80px}
 }
 
-/* drop */
+/* manifiesto: lista tipográfica + foto (composición partida) */
+.manifesto{display:grid;gap:var(--s6);align-items:center}
+.triad{margin:0;font-stretch:125%;font-weight:900;font-size:clamp(40px,5.6vw,92px);line-height:.86;letter-spacing:-.03em;text-transform:uppercase}
+.triad span{display:block}
+.manifesto-copy{display:grid;gap:var(--s4)}
+.manifesto img{width:100%;aspect-ratio:3/4;object-fit:cover}
+@media (min-width:960px){.manifesto{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}}
+
+/* drop: un solo formato (cuadrado, fondo blanco) */
 .drop-grid{display:grid;gap:var(--s3)}
-.product{display:grid;gap:12px;align-content:start}
-.product img{width:100%;aspect-ratio:1;object-fit:cover;background:#1a1a1a}
-.product h3{margin:0;font-stretch:125%;font-weight:850;font-size:clamp(21px,2vw,28px);text-transform:uppercase;line-height:1}
+.product{display:grid;gap:10px;align-content:start}
+.product img{width:100%;aspect-ratio:1;object-fit:contain;background:var(--white)}
 .product-meta{display:flex;justify-content:space-between;gap:var(--s2);align-items:baseline;flex-wrap:wrap}
-.stock{font-stretch:72%;font-weight:600;font-size:14px}
-.stock::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--beige);margin-right:8px;vertical-align:1px}
-.product a{font-weight:600;display:inline-flex;align-items:center;min-height:44px;justify-self:start}
+.product .data{color:var(--gray)}
+.product a{font-weight:700;display:inline-flex;align-items:center;min-height:44px;justify-self:start;text-underline-offset:4px}
 .site-footer a{display:inline-flex;align-items:center;min-height:44px}
-@media (min-width:700px){.drop-grid{grid-template-columns:repeat(2,1fr)}}
-@media (min-width:1024px){
-  .drop-grid{grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:auto auto}
-  .product.featured{grid-row:span 2;grid-template-rows:1fr auto}
-  .product.featured img{aspect-ratio:auto;height:100%;min-height:0}
-}
+@media (min-width:700px){.drop-grid{grid-template-columns:repeat(3,1fr)}}
+.next-drop{display:grid;gap:var(--s3);align-items:center;margin-top:var(--s8);padding-top:var(--s4);border-top:1px solid var(--line-light)}
+.next-drop img{width:100%;max-width:280px;aspect-ratio:4/5;object-fit:cover;filter:grayscale(1)}
+.next-drop p{margin:0;max-width:46ch}
+@media (min-width:860px){.next-drop{grid-template-columns:280px 1fr}}
 
 /* process */
-.steps{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,280px);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 var(--s3);margin:0;list-style:none;scrollbar-color:var(--ink) transparent}
-.step{scroll-snap-align:start;display:grid;gap:12px;align-content:start;border-top:1.5px solid var(--ink);padding-top:var(--s2)}
-.step-num{font-stretch:125%;font-weight:900;font-size:44px;line-height:1}
-.step h3{margin:0;font-stretch:125%;font-weight:850;font-size:21px;text-transform:uppercase}
-.step p{margin:0}
-.step img{width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--ink);filter:grayscale(1)}
-.scroll-hint{margin-top:var(--s2)}
+.steps{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(280px,320px);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 var(--s3);margin:0;list-style:none;scrollbar-width:none}
+.step{scroll-snap-align:start;display:grid;grid-template-rows:auto auto 1fr;gap:12px;align-content:start;border-top:1.5px solid currentColor;padding-top:var(--s2)}
+.step-num{font-stretch:125%;font-weight:900;font-size:clamp(56px,6vw,88px);line-height:.9;color:var(--gray)}
+.step p{margin:0;max-width:30ch}
+.step img{width:100%;aspect-ratio:4/5;object-fit:cover;align-self:end;filter:grayscale(1)}
+.steps-nav{display:flex;align-items:center;gap:12px;margin-top:var(--s2)}
+.steps-nav .btn{width:48px;padding:0}
 
 /* workshop */
 .techs{display:grid;gap:var(--s4)}
 .tech{display:grid;gap:12px;align-content:start}
 .tech img{width:100%;aspect-ratio:4/3;object-fit:cover;filter:grayscale(1) contrast(1.1)}
-.tech h3{margin:0;font-stretch:125%;font-weight:850;font-size:clamp(24px,2.4vw,32px);text-transform:uppercase;line-height:1}
 .tech p{margin:0;max-width:40ch}
+.scarcity{display:grid;gap:var(--s4);margin:0 0 var(--s12);padding:0;list-style:none}
+.scarcity li{display:grid;gap:8px;border-top:1.5px solid currentColor;padding-top:var(--s2)}
+.scarcity p{margin:0;max-width:34ch}
+.subhead{margin:0 0 var(--s4)}
+@media (min-width:860px){.scarcity{grid-template-columns:repeat(3,1fr)}}
 @media (min-width:860px){.techs{grid-template-columns:repeat(3,1fr)}}
 .plant{margin:var(--s12) 0 0;display:grid;gap:var(--s3)}
 .plant img{width:100%;aspect-ratio:3/2;object-fit:cover}
@@ -157,9 +174,8 @@ a{color:inherit}
 @media (min-width:1024px){.plant{grid-template-columns:2fr 1fr;align-items:end}}
 
 /* lines */
-.lines{display:grid;gap:0;margin:0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
-.line{display:grid;gap:var(--s2);padding:var(--s4) 0;border-bottom:1px solid var(--line-dark)}
-.line h3{margin:0;font-stretch:125%;font-weight:900;font-size:clamp(32px,4.4vw,64px);text-transform:uppercase;line-height:.9}
+.lines{display:grid;gap:0;margin:0;padding:0;list-style:none;border-top:1.5px solid currentColor}
+.line{display:grid;gap:var(--s2);padding:var(--s4) 0;border-bottom:1px solid var(--line-light)}
 .line p{margin:0;max-width:52ch}
 @media (min-width:860px){.line{grid-template-columns:1fr 1fr;align-items:baseline}}
 
@@ -178,11 +194,17 @@ a{color:inherit}
   .closing-tag,.closing-meta{letter-spacing:.24em}
   .closing-tag{margin-right:-.24em}
 }
-.site-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s3);padding:var(--s4) var(--gutter);border-top:1px solid var(--line-light)}
+.site-footer{display:grid;gap:var(--s8);padding:var(--s12) var(--gutter) var(--s4);border-top:1px solid var(--line-light)}
+.footer-cols{display:grid;gap:var(--s4)}
+.footer-cols ul{list-style:none;margin:0;padding:0;display:grid}
+.footer-cols h2{margin:0 0 var(--s1);color:var(--gray)}
+.footer-claim{margin:0;font-stretch:125%;font-weight:900;text-transform:uppercase;font-size:clamp(32px,4.6vw,64px);line-height:.92;letter-spacing:-.02em}
+.footer-mark{display:block;width:100%;height:auto;color:var(--white)}
+.footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s2);color:var(--gray)}
+@media (min-width:860px){.footer-cols{grid-template-columns:2fr 1fr 1fr}}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .wordmark{animation:none}
   *{transition:none!important}
 }
 </style>
@@ -190,41 +212,95 @@ a{color:inherit}
 <body>
 <a class="skip" href="#top">Saltar al contenido</a>
 
-<header class="site-header">
-  <a class="logo" href="#top" aria-label="INBOUND, inicio">INBOUND<sup>®</sup></a>
-  <nav class="nav label" aria-label="Secciones">
-    <a href="#disena">Diseña</a>
+<!-- Logo oficial (redibujado del PDF): se define una vez y se reutiliza -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo-inbound" viewBox="0 0 150.8 24">
+    <g fill="currentColor"><rect x="0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></g>
+    <g fill="none" stroke="currentColor" stroke-width="3.4"><path d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><path d="M129.5,1.7 H133.5"/><path d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/></g>
+    <circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="currentColor" stroke-width=".6"/>
+  </symbol>
+</svg>
+
+<header class="site-header" id="site-header">
+  <a class="logo" href="#top" aria-label="INBOUND, inicio"><svg viewBox="0 0 150.8 24" aria-hidden="true"><use href="#logo-inbound"/></svg></a>
+  <nav class="nav label" id="site-nav" aria-label="Secciones">
     <a href="#drop">Drop 001</a>
+    <a href="#disena">Estudio</a>
     <a href="#proceso">Proceso</a>
     <a href="#taller">Taller</a>
+    <a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Instagram</a>
   </nav>
-  <a class="ig-link label" href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Instagram</a>
+  <a class="btn btn-solid header-cta" href="#disena">Diseña la tuya</a>
+  <button class="btn btn-ghost menu-btn" type="button" aria-expanded="false" aria-controls="site-nav">Menú</button>
 </header>
 
 <main id="top">
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <p class="claim" lang="en">Heavyweight Oversize Culture.</p>
-        <p class="lede muted">Camisetas boxy fit en algodón de 310 gramos o más. Elige una del Drop 001 o diseña la tuya con los elementos de la marca.</p>
-        <div class="hero-actions">
-          <a class="btn btn-solid" href="#disena">Diseña tu camiseta</a>
-          <a class="btn btn-ghost" href="#drop">Ver el Drop 001</a>
-        </div>
+    <img class="hero-art" src="assets/marca/destello-hero.jpg" alt="" width="1536" height="1024" fetchpriority="high">
+    <div class="hero-copy">
+      <h1 id="hero-title" class="display" lang="en">Heavyweight Oversize Culture.</h1>
+      <p class="lede">310 gramos. Corte boxy u oversize. Tu diseño o el nuestro.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="#disena">Diseña la tuya</a>
+        <a class="hero-link" href="#drop">Ver el Drop 001</a>
       </div>
-      <img class="hero-photo" src="assets/hero-espaldas.jpg" alt="Dos modelos de espaldas con camisetas negras oversize de INBOUND: una con el logo, otra con una huella dactilar gigante." width="600" height="800">
     </div>
-    <h1 id="hero-title" class="display wordmark">Inbound</h1>
-    <div class="hero-specs label muted">
-      <span>Boxy fit</span><span>Algodón 310+ GSM</span><span>Drop 001, stock limitado</span><span>Est. 2025</span>
+    <ul class="hero-data data">
+      <li>310+ GSM</li><li>Boxy / Oversize</li><li>Drop 001</li><li>Hecho en Colombia</li>
+    </ul>
+  </section>
+
+  <section class="section light" aria-labelledby="manifiesto-title">
+    <div class="manifesto">
+      <div class="manifesto-copy">
+        <h2 id="manifiesto-title" class="triad"><span>Entra.</span><span>Impacta.</span><span>Trasciende.</span></h2>
+        <p class="lede muted">INBOUND es ropa pesada hecha en Colombia para quien no pide permiso. Algodón que se siente, cortes amplios y gráficos que no pasan desapercibidos.</p>
+        <p class="h3" lang="en">Own your style.</p>
+      </div>
+      <img src="assets/hero-espaldas.jpg" alt="Dos modelos de espaldas con camisetas negras oversize de INBOUND: una con el logo, otra con una huella dactilar gigante." loading="lazy" width="600" height="800">
+    </div>
+  </section>
+
+  <section id="drop" class="section" aria-labelledby="drop-title">
+    <div class="section-head">
+      <h2 id="drop-title" class="display h2" lang="en">Drop 001</h2>
+      <p class="lede muted">Primera tirada. Pocas unidades por diseño. Se pide por mensaje directo.</p>
+    </div>
+    <div class="drop-grid">
+      <article class="product">
+        <img src="assets/drop-siluetas.jpg" alt="Espalda de una camiseta negra boxy con dos siluetas difuminadas en azul y blanco y la etiqueta INBOUND, Hecho en Colombia." loading="lazy" width="1245" height="1245">
+        <div class="product-meta"><h3 class="h3">Siluetas</h3><span class="data">IB-001</span></div>
+        <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
+      </article>
+      <article class="product">
+        <img src="assets/drop-destello.jpg" alt="Camiseta corta negra con una estrella blanca que gotea y el texto INBOUND." loading="lazy" width="1245" height="1245">
+        <div class="product-meta"><h3 class="h3">Destello</h3><span class="data">IB-002</span></div>
+        <p class="data" style="margin:0">Drop top, 310 GSM</p>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
+      </article>
+      <article class="product">
+        <img src="assets/drop-balaclava.jpg" alt="Camiseta negra con el retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="388" height="377">
+        <div class="product-meta"><h3 class="h3">Anónimo 26</h3><span class="data">IB-003</span></div>
+        <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
+      </article>
+    </div>
+    <div class="next-drop">
+      <img src="assets/estudio-bocetos.jpg" alt="Diseñador con capucha frente a una pared de bocetos de camisetas con notas de próximamente." loading="lazy" width="576" height="720">
+      <div>
+        <h3 class="h3" lang="en">Drop 002</h3>
+        <p class="muted">En el taller. Lo enseñamos primero en Instagram.</p>
+        <a class="hero-link" href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Seguir a @inbound.st</a>
+      </div>
     </div>
   </section>
 
   <section id="disena" class="section light" aria-labelledby="disena-title">
     <div class="section-head">
-      <h2 id="disena-title" class="display h2">Diseña tu INBOUND</h2>
-      <p class="lede muted">Elige el corte, el color y el gramaje. Combina gráficos y una frase. Revisamos que se pueda producir antes de que la pidas.</p>
-      <div><a class="btn btn-solid" href="prototipo-3d/index.html">Diseñar en 3D (prototipo)</a></div>
+      <h2 id="disena-title" class="display h2">Diseña la tuya</h2>
+      <p class="lede muted">Tú pones la idea. Nosotros, el peso. Arma tu camiseta aquí o ábrela en 3D con tus propios gráficos.</p>
+      <div><a class="btn btn-solid" href="prototipo-3d/index.html">Abrir el estudio 3D</a></div>
     </div>
 
     <div class="config">
@@ -303,78 +379,53 @@ a{color:inherit}
     </div>
   </section>
 
-  <section id="drop" class="section" aria-labelledby="drop-title">
+  <section id="proceso" class="section" aria-labelledby="proceso-title">
     <div class="section-head">
-      <h2 id="drop-title" class="display h2">Drop 001</h2>
-      <p class="lede muted">La primera tirada de INBOUND. Camisetas boxy fit en algodón pesado, con stock limitado por diseño.</p>
-    </div>
-    <div class="drop-grid">
-      <article class="product featured">
-        <img src="assets/drop-celestial.png" alt="Camiseta negra con gráfico azul de una figura iluminada dentro de un halo." loading="lazy" width="480" height="480">
-        <div class="product-meta"><h3>Celestial</h3><span class="stock">En stock</span></div>
-        <p class="muted" style="margin:0">Boxy fit, algodón 310 g, serigrafía en la espalda.</p>
-        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
-      </article>
-      <article class="product">
-        <img src="assets/drop-balaclava.jpg" alt="Camiseta negra con retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="400" height="389">
-        <div class="product-meta"><h3>Anónimo 26</h3><span class="stock">En stock</span></div>
-        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
-      </article>
-      <article class="product">
-        <img src="assets/drop-nucleo.png" alt="Modelo con camiseta negra INBOUND con un gráfico de núcleo rojo en la espalda." loading="lazy" width="374" height="560">
-        <div class="product-meta"><h3>Núcleo</h3><span class="stock">En stock</span></div>
-        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
-      </article>
-      <article class="product">
-        <img src="assets/drop-fantasma.jpg" alt="Dos camisetas negras: una lisa con logo INBOUND y otra con dos figuras azules difuminadas." loading="lazy" width="624" height="576">
-        <div class="product-meta"><h3>Fantasma</h3><span class="stock">En stock</span></div>
-        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
-      </article>
-      <article class="product">
-        <img src="assets/estudio-bocetos.jpg" alt="Diseñador con capucha frente a una pared de bocetos de camisetas con notas de próximamente." loading="lazy" width="576" height="720">
-        <div class="product-meta"><h3>Drop 002</h3><span class="stock muted">Próximamente</span></div>
-        <a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Seguir en Instagram</a>
-      </article>
-    </div>
-  </section>
-
-  <section id="proceso" class="section light" aria-labelledby="proceso-title">
-    <div class="section-head">
-      <h2 id="proceso-title" class="display h2">Del diseño a la prenda</h2>
-      <p class="lede muted">Siete pasos entre tu idea y la puerta de tu casa.</p>
+      <h2 id="proceso-title" class="display h2-m">Del diseño a la prenda</h2>
+      <p class="lede muted">De tu pantalla a tu puerta, en un solo taller.</p>
     </div>
     <ol class="steps" tabindex="0" aria-label="Pasos del proceso, desplázate horizontalmente">
-      <li class="step"><span class="step-num">01</span><h3>Elige</h3><p>Corte oversize o boxy fit, el color y el gramaje de la tela según la estructura que buscas.</p><img src="assets/paso-elige.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">02</span><h3>Diseña</h3><p>Combina gráficos y frases de la marca y mira tu prototipo antes de pedirlo.</p><img src="assets/paso-disena.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">03</span><h3>Validamos</h3><p>El sistema verifica que el diseño mantenga la identidad de la marca y se pueda producir.</p><img src="assets/paso-valida.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">04</span><h3>Producimos</h3><p>Elegimos la técnica ideal: serigrafía, DTF o alta densidad.</p><img src="assets/paso-produce.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">05</span><h3>Controlamos</h3><p>Revisamos estampado, medidas y acabados.</p><img src="assets/paso-controla.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">06</span><h3>Empacamos</h3><p>Antes de cerrar la caja verificamos medidas, ubicación, colores y acabados.</p><img src="assets/paso-empaca.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">07</span><h3>Entregamos</h3><p>Tu pedido llega a la puerta de tu casa.</p><img src="assets/paso-entrega.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">01</span><h3 class="h3">Elige</h3><p>Corte boxy u oversize, color y gramaje según la caída que buscas.</p></li>
+      <li class="step"><span class="step-num">02</span><h3 class="h3">Diseña</h3><p>Combina gráficos de la marca, tu frase o tu imagen y mírala en 3D antes de pedirla.</p></li>
+      <li class="step"><span class="step-num">03</span><h3 class="h3">Validamos</h3><p>Revisamos que el diseño se pueda producir y que siga siendo INBOUND.</p></li>
+      <li class="step"><span class="step-num">04</span><h3 class="h3">Producimos</h3><p>Serigrafía, DTF o alta densidad: la técnica la decide tu diseño.</p></li>
+      <li class="step"><span class="step-num">05</span><h3 class="h3">Controlamos</h3><p>Estampado, medidas y acabados, prenda por prenda.</p><img src="assets/paso-controla.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">06</span><h3 class="h3">Empacamos</h3><p>Caja cerrada solo cuando todo está como lo pediste.</p><img src="assets/paso-empaca.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">07</span><h3 class="h3">Entregamos</h3><p>A la puerta de tu casa.</p><img src="assets/paso-entrega.png" alt="" loading="lazy"></li>
     </ol>
-    <p class="hint scroll-hint">Desliza para ver los siete pasos.</p>
+    <div class="steps-nav">
+      <button class="btn btn-ghost" type="button" data-steps="-1" aria-label="Paso anterior">‹</button>
+      <button class="btn btn-ghost" type="button" data-steps="1" aria-label="Paso siguiente">›</button>
+      <span class="data" id="steps-pos" aria-live="polite">01 / 07</span>
+    </div>
   </section>
 
-  <section id="taller" class="section" aria-labelledby="taller-title">
+  <section id="taller" class="section light" aria-labelledby="taller-title">
     <div class="section-head">
-      <h2 id="taller-title" class="display h2">Cómo se imprime una INBOUND</h2>
-      <p class="lede muted">Serigrafía para los diseños grandes, DTF para las letras y marquillas en alta densidad. Así cada camiseta dura y se siente premium.</p>
+      <h2 id="taller-title" class="display h2-m">Por qué hay pocas</h2>
+      <p class="lede muted">La serigrafía no se apura. Cada diseño pide su propio marco, ajustes y pruebas, y el taller produce una cantidad limitada al día. Por eso cada tirada es corta.</p>
     </div>
+    <ul class="scarcity">
+      <li><span class="data">Preparación</span><p>Antes de la primera camiseta hay que diseñar, insolar y armar el marco.</p></li>
+      <li><span class="data">Cambios</span><p>Cada diseño nuevo implica otros ajustes y otras pruebas de color.</p></li>
+      <li><span class="data">Capacidad</span><p>El taller procesa una cantidad limitada de prendas por día.</p></li>
+    </ul>
+    <h3 class="h3 subhead">Cada técnica donde rinde más</h3>
     <div class="techs">
       <article class="tech">
         <img src="assets/tec-serigrafia.jpg" alt="Marco de serigrafía con el logo INBOUND y la frase The future is yours." loading="lazy">
-        <h3>Serigrafía</h3>
-        <p class="muted">Para gráficos grandes. Cada diseño necesita su propio marco, por eso es la etapa que más tiempo y cuidado pide.</p>
+        <h4 class="h3">Serigrafía</h4>
+        <p class="muted">Gráficos grandes. Tinta que se queda en la tela.</p>
       </article>
       <article class="tech">
         <img src="assets/tec-dtf.jpg" alt="Impresora DTF imprimiendo una tira con el logo INBOUND repetido." loading="lazy">
-        <h3>DTF</h3>
-        <p class="muted">Para letras y detalles finos. Se imprime en film y se transfiere a la prenda con prensa térmica.</p>
+        <h4 class="h3">DTF</h4>
+        <p class="muted">Letras y detalles finos. Se imprime en film y se fija con prensa térmica.</p>
       </article>
       <article class="tech">
         <img src="assets/tec-alta-densidad.png" alt="Máquina de marquillas en alta densidad estampando el logo INBOUND." loading="lazy">
-        <h3>Alta densidad</h3>
-        <p class="muted">Para las marquillas. Relieve que se nota al tacto y aguanta lavado tras lavado.</p>
+        <h4 class="h3">Alta densidad</h4>
+        <p class="muted">Marquillas con relieve que se siente al tacto y aguanta lavado tras lavado.</p>
       </article>
     </div>
     <figure class="plant">
@@ -383,31 +434,52 @@ a{color:inherit}
     </figure>
   </section>
 
-  <section class="section light" aria-labelledby="lineas-title">
+  <section class="section" aria-labelledby="lineas-title">
     <div class="section-head">
-      <h2 id="lineas-title" class="display h2">Tu estilo, nuestra esencia</h2>
-      <p class="lede muted">Tres líneas con la misma base: buena tela, buen corte y detalles que marcan la diferencia.</p>
+      <h2 id="lineas-title" class="display h2-m">Tu estilo, nuestra esencia</h2>
+      <p class="lede muted">Tres líneas. La misma base.</p>
     </div>
     <ul class="lines">
-      <li class="line"><h3>Clásica</h3><p>Camisas de botón, manga larga y corta. Negro, blanco, gris, beige y azul marino, con diseños mínimos.</p></li>
-      <li class="line"><h3>Drop top</h3><p>Drop top, oversize y boxy fit en tonos neutros. Cómodas y versátiles para el día a día.</p></li>
-      <li class="line"><h3>Gráfica</h3><p>Estampados originales, oversize y boxy fit. Gráficos llamativos con raíz en la cultura urbana.</p></li>
+      <li class="line"><h3 class="h3">Clásica</h3><p class="muted">Camisas de botón, manga larga y corta, en negro, blanco, gris, beige y azul marino. Diseño mínimo.</p></li>
+      <li class="line"><h3 class="h3">Drop top</h3><p class="muted">Drop top, oversize y boxy fit en tonos neutros.</p></li>
+      <li class="line"><h3 class="h3">Gráfica</h3><p class="muted">Estampados originales en oversize y boxy fit, con raíz en la cultura urbana.</p></li>
     </ul>
   </section>
 
   <section class="closing" aria-label="Comprar">
     <div class="closing-inner">
-      <svg class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:currentColor}.logo-mark .s{fill:none;stroke:currentColor;stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.40" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.70,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.70 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.30" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.70 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.10,0 110.50,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.50"/><path class="s" d="M142.10,6.7 V16.70 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/><circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="currentColor" stroke-width=".6"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></svg>
+      <svg class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
       <p class="closing-tag">No necesitas perseguir la atención.<br>La atención llega a ti.</p>
-      <a class="cta-glow" href="#drop">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
+      <a class="cta-glow" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
     </div>
     <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>
   </section>
 </main>
 
-<footer class="site-footer label muted">
-  <span>INBOUND STUDIO®. Own your style. Premium streetwear, est. 2025.</span>
-  <a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">@inbound.st</a>
+<footer class="site-footer">
+  <div class="footer-cols">
+    <p class="footer-claim" lang="en">Own your style.</p>
+    <div>
+      <h2 class="data">Explora</h2>
+      <ul>
+        <li><a href="#drop">Drop 001</a></li>
+        <li><a href="#disena">Estudio</a></li>
+        <li><a href="prototipo-3d/index.html">Estudio 3D</a></li>
+        <li><a href="#proceso">Proceso</a></li>
+        <li><a href="#taller">Taller</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="data">Pedidos</h2>
+      <ul>
+        <li><a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Escríbenos por DM</a></li>
+        <li><a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">@inbound.st</a></li>
+      </ul>
+      <p class="muted">Hecho en Colombia.</p>
+    </div>
+  </div>
+  <svg class="footer-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
+  <div class="footer-base data"><span>INBOUND STUDIO®</span><span>Est. 2025</span></div>
 </footer>
 
 <script>
@@ -550,6 +622,31 @@ a{color:inherit}
 
   if (document.fonts) document.fonts.ready.then(render);
   render();
+
+  // Menú móvil a pantalla completa
+  const header = document.getElementById("site-header"), menuBtn = header.querySelector(".menu-btn");
+  const setMenu = (open) => {
+    header.classList.toggle("open", open);
+    menuBtn.setAttribute("aria-expanded", String(open));
+    menuBtn.textContent = open ? "Cerrar" : "Menú";
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+  menuBtn.addEventListener("click", () => setMenu(!header.classList.contains("open")));
+  header.querySelectorAll(".nav a").forEach(a => a.addEventListener("click", () => setMenu(false)));
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && header.classList.contains("open")) { setMenu(false); menuBtn.focus(); } });
+
+  // Proceso: flechas y posición (01 / 07)
+  const steps = document.querySelector(".steps"), stepPos = document.getElementById("steps-pos");
+  const total = steps.children.length, pad = n => String(n).padStart(2, "0");
+  const stepW = () => steps.children[0].getBoundingClientRect().width + parseFloat(getComputedStyle(steps).columnGap);
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("[data-steps]").forEach(b => b.addEventListener("click", () =>
+    steps.scrollBy({ left: +b.dataset.steps * stepW(), behavior: reduceMotion ? "auto" : "smooth" })));
+  steps.addEventListener("scroll", () => {
+    const atEnd = steps.scrollLeft + steps.clientWidth >= steps.scrollWidth - 2;
+    const i = atEnd ? total : Math.round(steps.scrollLeft / stepW()) + 1;
+    stepPos.textContent = `${pad(i)} / ${pad(total)}`;
+  }, { passive: true });
 })();
 </script>
 </body>

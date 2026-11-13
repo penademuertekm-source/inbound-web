@@ -74,6 +74,7 @@ legend{padding:0;margin-bottom:10px}
 .gbtn{display:grid;gap:6px;justify-items:center;padding:10px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--tint);font:inherit;font-stretch:72%;font-weight:600;font-size:14px;cursor:pointer;min-height:96px}
 .gbtn:hover{border-color:var(--ink)}
 .gbtn img{height:44px;width:auto;max-width:100%;object-fit:contain}
+.gbtn.dark{background:var(--ink);color:var(--white);border-color:var(--ink)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .text-input{flex:1;min-width:0;min-height:44px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;font:inherit;text-transform:uppercase}
 .text-input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
@@ -208,6 +209,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 </main>
 
 <script src="camiseta-glb.js"></script>
+<script src="graficos-marca.js"></script>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}
 </script>
@@ -356,7 +358,28 @@ const GRAPHICS = {
     ['THE', 'FUTURE', 'IS YOURS'].forEach((t, i) => fitText(ctx, t, w / 2, (220 + i * 240) * s, w * 0.96, 200 * s));
   } },
   logo: { name: 'Logo INBOUND', w: 1508, h: 240, cm: 9, async draw(ctx, w, h, ink) { ctx.drawImage(await logoImage(ink), 0, 0, w, h); } },
+  // Diseños de marca (raster sobre negro): el negro se vuelve transparente; cm por defecto = ~150 ppp
+  destello: brandArt('Destello', 'destello', 1536, 1024, 24),
+  siluetas: brandArt('Siluetas', 'siluetas', 1151, 1367, 19),
+  calor: brandArt('Calor', 'calor', 708, 741, 12),
 };
+function brandArt(name, key, w, h, cm) {
+  return { name, w, h, cm, kind: 'imagen', srcPx: w, fixedInk: true, dark: true, async draw(ctx, cw, ch) {
+    const img = new Image(); img.src = window.GRAFICOS_MARCA[key]; await img.decode();
+    ctx.drawImage(img, 0, 0, cw, ch);
+    keyBlack(ctx, cw, ch);
+  } };
+}
+// Clave de luminancia: alfa = canal más brillante; se despremultiplica para conservar el color
+function keyBlack(ctx, w, h) {
+  const d = ctx.getImageData(0, 0, w, h), p = d.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const a = Math.max(p[i], p[i + 1], p[i + 2]);
+    if (a < 10) { p[i + 3] = 0; continue; }
+    const k = 255 / a; p[i] *= k; p[i + 1] *= k; p[i + 2] *= k; p[i + 3] = a;
+  }
+  ctx.putImageData(d, 0, 0);
+}
 function fitText(ctx, text, x, y, maxW, base) {
   setFont(ctx, base); const m = ctx.measureText(text).width;
   if (m > maxW) setFont(ctx, Math.floor(base * maxW / m));
@@ -511,11 +534,11 @@ document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('
 const gbox = $('graphics');
 for (const [id, g] of Object.entries(GRAPHICS)) {
   const b = document.createElement('button');
-  b.type = 'button'; b.className = 'gbtn'; b.innerHTML = `<img alt=""><span>${g.name}</span>`;
+  b.type = 'button'; b.className = g.dark ? 'gbtn dark' : 'gbtn'; b.innerHTML = `<img alt=""><span>${g.name}</span>`;
   b.setAttribute('aria-label', `Añadir ${g.name}`);
   const { canvas: c, ctx } = makeCanvas(g.w / 4, g.h / 4);
   Promise.resolve(g.draw(ctx, c.width, c.height, '#080808')).then(() => { b.querySelector('img').src = c.toDataURL(); });
-  b.addEventListener('click', () => addLayer({ kind: 'grafico', name: g.name, w: g.w, h: g.h, cm: g.cm, draw: g.draw }));
+  b.addEventListener('click', () => addLayer({ kind: g.kind || 'grafico', name: g.name, w: g.w, h: g.h, cm: g.cm, draw: g.draw, srcPx: g.srcPx, fixedInk: g.fixedInk }));
   gbox.append(b);
 }
 

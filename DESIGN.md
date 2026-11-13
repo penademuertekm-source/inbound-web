@@ -40,8 +40,15 @@ Botones: negros con texto blanco; sobre fondo negro se usa la versión invertida
 
 | Rol | Ajuste | Uso |
 |-----|--------|-----|
-| Display | `wdth 125`, `wght 850–900`, mayúsculas, tracking -0.02em, lh 0.88 | Wordmark del hero, titulares de sección |
-| Etiqueta | `wdth 72`, `wght 600`, tracking +0.02em, sentence case | Nav, specs, etiquetas de controles |
+| Display | `wdth 125`, `wght 850–900`, mayúsculas, tracking -0.02em, lh 0.88 | Titular del hero (`.display`) |
+| Título L | Display a `clamp(38px, 6.4vw, 96px)` (`.h2`) | Secciones principales: Drop 001, Diseña la tuya |
+| Título M | Display a `clamp(30px, 4.2vw, 60px)` (`.h2-m`) | Secciones secundarias: Proceso, Por qué hay pocas, Líneas |
+| H3 | `wdth 125`, `wght 850`, `clamp(21px, 2vw, 28px)` (`.h3`), un solo tamaño en toda la página | Productos, pasos, técnicas, líneas |
+| Dato | `wdth 62`, `wght 700`, mayúsculas, tracking +0.08em, cifras tabulares (`.data`) | Datos verificables: 310+ GSM, códigos IB-001, cortes. Única excepción a "sin mayúsculas en etiquetas" |
+| Etiqueta | `wdth 72`, `wght 600`, tracking +0.02em, sentence case | Nav, etiquetas de controles |
+
+Idioma: lemas y titulares de marca en inglés (Heavyweight Oversize Culture, Own your style, Drop 001); explicaciones, botones y datos en español.
+Composición: ninguna sección repite la anterior (a sangre/partida, lista tipográfica + foto, grid de producto, herramienta, carrusel, lista de razones). Logo: un solo símbolo SVG (`#logo-inbound`) en header, cierre y footer.
 | Cuerpo | `wdth 100`, `wght 400`, lh 1.55, medida ≤ 62ch | Párrafos |
 
 **Cierre (réplica de la pág. 10 del PDF):** Montserrat 500/600 (Google Fonts) para lema, botón "Compra ahora" y
@@ -69,7 +76,7 @@ Escala modular 1.333 (expresiva), base 16px:
 | Chip de opción | Primitivo | Elegir corte, gramaje, gráfico, talla | por defecto, seleccionado (`ink`), foco |
 | Swatch | Primitivo | Elegir color de prenda | 5 colores, seleccionado con anillo |
 | Header | Componente | Wordmark + nav de anclas + Instagram | claro sobre negro |
-| Ficha de producto | Componente | Prenda del Drop 001 | grande (destacada), estándar |
+| Ficha de producto | Componente | Prenda del Drop 001 | cuadrada, fondo blanco, código IB-00X, CTA "Pedir por DM" |
 | Paso de proceso | Componente | Una etapa de "Del diseño a la prenda" (secuencia real: numerada) | 7 pasos |
 | Técnica | Componente | Serigrafía / DTF / Alta densidad con foto | 3 |
 | Configurador | Patrón | Diseña tu INBOUND: vista previa SVG + controles + validación + resumen | — |

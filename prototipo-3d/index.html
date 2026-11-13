@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diseña en 3D | INBOUND STUDIO® (prototipo)</title>
+<meta name="description" content="Prototipo: coloca gráficos y frases sobre una camiseta INBOUND en 3D.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#080808; --white:#FFFFFF; --gray:#858585; --beige:#D6D0C5;
+  --gray-text:#6E6E6E; --tint:#EEEBE6; --line:rgba(0,0,0,.16);
+  --select:#2F6BFF; /* excepción funcional: el marco de selección debe verse sobre las 4 prendas */
+  --gutter:clamp(16px,3vw,32px);
+  --font:"Archivo","Arial Narrow",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--white);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.label{font-stretch:72%;font-weight:600;font-size:14px;letter-spacing:.02em}
+.muted{color:var(--gray-text)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.top{display:flex;align-items:center;gap:16px;padding:10px var(--gutter);background:var(--ink);color:var(--white)}
+.logo{font-stretch:125%;font-weight:900;font-size:18px;text-decoration:none;color:inherit;min-height:44px;display:inline-flex;align-items:center}
+.badge{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 12px;font-stretch:72%;font-weight:600;font-size:13px}
+.top a.back{margin-left:auto;color:inherit;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;border-bottom:1.5px solid transparent}
+.top a.back:hover{border-color:currentColor}
+
+.app{display:grid}
+/* móvil: la vista 3D queda fija arriba mientras los controles se desplazan debajo */
+html{scroll-padding-top:calc(46svh + 12px)} /* que el foco no quede tapado por la vista fija */
+@media (min-width:960px){html{scroll-padding-top:0}}
+.stage{position:sticky;top:0;z-index:5;height:46svh;min-height:300px;background:var(--tint);overflow:hidden;box-shadow:0 1px 0 var(--line)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas.dragging{cursor:grabbing}
+.stage-hint{position:absolute;left:12px;right:12px;bottom:12px;margin:0;text-align:center;font-size:14px;color:var(--gray-text);pointer-events:none}
+.view-btns{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.loading{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;background:var(--tint)}
+.loading[hidden]{display:none}
+
+.panel{padding:24px var(--gutter) 48px;display:grid;gap:28px;align-content:start}
+.panel h1{margin:0;font-stretch:125%;font-weight:900;font-size:clamp(28px,3vw,40px);line-height:.95;text-transform:uppercase}
+.panel h2{margin:0 0 12px;font-stretch:72%;font-weight:700;font-size:15px;letter-spacing:.02em}
+.intro{margin:8px 0 0;max-width:46ch}
+.block{border-top:1.5px solid var(--ink);padding-top:16px}
+fieldset{border:0;margin:0;padding:0}
+legend{padding:0;margin-bottom:10px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);font-stretch:72%;font-weight:600;background:var(--white)}
+.chip input:checked+span{background:var(--ink);color:var(--white)}
+.chip input:focus-visible+span{outline:2px solid var(--ink);outline-offset:3px}
+.swatch span{width:44px;height:44px;padding:0;border-color:var(--gray);background:var(--c)}
+.swatch input:checked+span{background:var(--c);box-shadow:0 0 0 2px var(--white),0 0 0 4px var(--ink)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);font:inherit;font-stretch:72%;font-weight:700;font-size:15px;cursor:pointer;background:var(--white);color:var(--ink);transition:opacity .2s,background-color .2s}
+.btn:hover{background:rgba(133,133,133,.16)}
+.btn-solid{background:var(--ink);color:var(--white)}
+.btn-solid:hover{background:var(--ink);opacity:.82}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.graphics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.gbtn{display:grid;gap:6px;justify-items:center;padding:10px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--tint);font:inherit;font-stretch:72%;font-weight:600;font-size:14px;cursor:pointer;min-height:96px}
+.gbtn:hover{border-color:var(--ink)}
+.gbtn img{height:44px;width:auto;max-width:100%;object-fit:contain}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.text-input{flex:1;min-width:0;min-height:44px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;font:inherit;text-transform:uppercase}
+.text-input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.file-label{position:relative}
+.file-label input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-label:focus-within{outline:2px solid var(--ink);outline-offset:3px;border-radius:999px}
+.hint{margin:8px 0 0;font-size:14px;color:var(--gray-text)}
+.error{margin:8px 0 0;font-size:14px;font-weight:600;color:#B3261E}
+
+.layers{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.layers li{display:flex;gap:6px;align-items:stretch}
+.layer-btn{flex:1;text-align:left;min-height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--white);font:inherit;cursor:pointer}
+.layer-btn[aria-pressed="true"]{border-color:var(--select);box-shadow:inset 0 0 0 1px var(--select)}
+.del{min-width:44px;border:1.5px solid var(--line);border-radius:10px;background:var(--white);font:inherit;font-size:18px;cursor:pointer}
+.empty{margin:0;color:var(--gray-text)}
+
+.range{display:grid;gap:4px;margin-bottom:12px}
+.range-top{display:flex;justify-content:space-between}
+input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
+
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.checks li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:15px}
+.ok::before{content:"✓";font-weight:800}
+.warn::before{content:"!";font-weight:900;color:#B3261E;text-align:center}
+.status-line{margin:12px 0 0;font-weight:700}
+
+@media (min-width:960px){
+  .app{grid-template-columns:minmax(0,1fr) 420px;height:calc(100svh - 64px)}
+  .stage{height:100%}
+  .panel{overflow-y:auto;border-left:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="../index.html" aria-label="INBOUND, volver al inicio">INBOUND®</a>
+  <span class="badge">Prototipo 3D</span>
+  <a class="back label" href="../index.html#disena">Volver a la web</a>
+</header>
+
+<main class="app">
+  <section class="stage" aria-label="Vista 3D de la camiseta">
+    <canvas id="c" aria-label="Camiseta en 3D. Arrastra para girarla; arrastra un gráfico para moverlo." role="img"></canvas>
+    <div class="view-btns" role="group" aria-label="Vista">
+      <button class="btn" type="button" data-view="front" aria-pressed="true">Frente</button>
+      <button class="btn" type="button" data-view="back" aria-pressed="false">Espalda</button>
+    </div>
+    <p class="stage-hint" id="hint" aria-live="polite">Añade un gráfico desde el panel.</p>
+    <div class="loading" id="loading"><p>Cargando la camiseta 3D…</p></div>
+  </section>
+
+  <aside class="panel" aria-label="Herramientas de diseño">
+    <div>
+      <h1>Diseña tu INBOUND en 3D</h1>
+      <p class="intro muted">Prototipo de demostración: elige la prenda, añade gráficos de la marca, tu frase o tu imagen y colócalos donde quieras.</p>
+    </div>
+
+    <div class="block">
+      <h2>1. La prenda</h2>
+      <fieldset>
+        <legend class="label">Corte</legend>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="corte" value="Oversize" checked><span>Oversize</span></label>
+          <label class="chip"><input type="radio" name="corte" value="Boxy fit"><span>Boxy fit</span></label>
+        </div>
+      </fieldset>
+      <fieldset style="margin-top:16px">
+        <legend class="label">Color</legend>
+        <div class="chips" id="colors"></div>
+      </fieldset>
+    </div>
+
+    <div class="block">
+      <h2>2. Añade al diseño</h2>
+      <div class="graphics" id="graphics"></div>
+      <div style="margin-top:16px">
+        <label class="label" for="frase">Tu frase</label>
+        <div class="row" style="margin-top:8px">
+          <input class="text-input" id="frase" maxlength="24" placeholder="Own your style" autocomplete="off">
+          <button class="btn" type="button" id="add-text">Añadir frase</button>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <span class="btn file-label">Subir tu imagen<input type="file" id="upload" accept="image/png,image/jpeg,image/webp,image/svg+xml" aria-label="Subir tu imagen (PNG, JPG, WEBP o SVG)"></span>
+        <p class="hint">PNG con fondo transparente para mejores resultados. Máximo 15 MB.</p>
+        <p class="error" id="upload-error" role="alert" hidden></p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>3. Capas</h2>
+      <ul class="layers" id="layers"></ul>
+      <p class="empty" id="layers-empty">Aún no hay nada en la camiseta.</p>
+      <div id="sel" hidden style="margin-top:16px">
+        <div class="range">
+          <div class="range-top"><label class="label" for="size">Tamaño</label><output id="size-out" for="size"></output></div>
+          <input type="range" id="size" min="4" max="38" step="0.5">
+        </div>
+        <div class="range">
+          <div class="range-top"><label class="label" for="rot">Rotación</label><output id="rot-out" for="rot"></output></div>
+          <input type="range" id="rot" min="-180" max="180" step="1">
+        </div>
+        <div class="row">
+          <button class="btn" type="button" id="center">Centrar en el pecho</button>
+          <button class="btn" type="button" id="remove">Eliminar capa</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>4. Validamos tu diseño</h2>
+      <ul class="checks" id="checks"></ul>
+      <p class="status-line" id="status" role="status"></p>
+    </div>
+
+    <div class="block row">
+      <button class="btn btn-solid" type="button" id="export">Descargar imagen</button>
+      <a class="btn" href="../index.html#disena">Volver a la web</a>
+    </div>
+  </aside>
+</main>
+
+<script src="camiseta-glb.js"></script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ---------- Datos ----------
+const COLORS = [
+  { name: 'Negro', hex: '#080808', dark: true },
+  { name: 'Blanco', hex: '#FFFFFF', dark: false },
+  { name: 'Gris', hex: '#858585', dark: true },
+  { name: 'Beige', hex: '#D6D0C5', dark: false },
+];
+// Área imprimible en coordenadas de la pieza (metros; 0,0 = centro del cuello)
+const PRINT = { Frente: { x: 0.21, yMin: -0.66, yMax: -0.11 }, Espalda: { x: 0.21, yMin: -0.66, yMax: -0.05 } };
+const MIN_DPI = 150;
+const CUTS = { 'Oversize': [1, 1, 1], 'Boxy fit': [1.08, 0.93, 1.04] };
+const LOGO_SVG = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:${fill}}.logo-mark .s{fill:none;stroke:${fill};stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.5"/><path class="s" d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/><circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="${fill}" stroke-width=".6"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></svg>`;
+
+// ---------- Funciones puras (validación) ----------
+function extents(wM, hM, deg) {
+  const a = THREE.MathUtils.degToRad(deg), c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+  return { x: (wM * c + hM * s) / 2, y: (wM * s + hM * c) / 2 };
+}
+function inPrintArea(panelName, x, y, wM, hM, deg) {
+  const p = PRINT[panelName], e = extents(wM, hM, deg);
+  return Math.abs(x) + e.x <= p.x && y - e.y >= p.yMin && y + e.y <= p.yMax;
+}
+const dpi = (px, cm) => px / (cm / 2.54);
+const lum = (hex) => {
+  const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => c <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
+  return .2126 * v[0] + .7152 * v[1] + .0722 * v[2];
+};
+const contrast = (a, b) => (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+// autocomprobación de la lógica de validación
+console.assert(inPrintArea('Frente', 0, -0.35, 0.2, 0.2, 0) === true, 'área: centro');
+console.assert(inPrintArea('Frente', 0.3, -0.35, 0.1, 0.1, 0) === false, 'área: manga');
+console.assert(Math.round(dpi(1181, 20)) === 150, 'dpi');
+
+// ---------- Escena ----------
+const canvas = document.getElementById('c');
+const stage = canvas.parentElement;
+const loading = document.getElementById('loading');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+} catch (err) {
+  loading.innerHTML = '<p>Tu navegador no tiene WebGL activado, así que no puede mostrar la camiseta en 3D. Prueba con Chrome, Edge o Safari actualizados.</p>';
+  throw err;
+}
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.NeutralToneMapping; // respeta el color real de la prenda (pensado para e-commerce)
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#EEEBE6');
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const key = new THREE.DirectionalLight('#ffffff', 0.75); key.position.set(1.2, 1.6, 2.2); scene.add(key);
+const rim = new THREE.DirectionalLight('#ffffff', 0.6); rim.position.set(-1.5, 1, -2); scene.add(rim);
+
+const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 30);
+const TARGET = new THREE.Vector3(0, -0.37, 0);
+const controls = new OrbitControls(camera, canvas);
+controls.target.copy(TARGET); controls.enableDamping = true; controls.enablePan = false;
+controls.minPolarAngle = Math.PI * 0.2; controls.maxPolarAngle = Math.PI * 0.8;
+
+const shirt = new THREE.Group(); scene.add(shirt);
+const fabric = new THREE.MeshPhysicalMaterial({ color: COLORS[0].hex, roughness: 0.9, sheen: 1, sheenRoughness: 0.8, sheenColor: new THREE.Color(0x262626), side: THREE.DoubleSide });
+const panels = [];
+const state = { color: COLORS[0], cut: 'Oversize', view: 'front' };
+const layers = [];
+let selected = null, uid = 0;
+
+function fitDistance() {
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  return Math.max(0.47 / t, 0.62 / (t * camera.aspect)) * 1.05;
+}
+function resize() {
+  const { clientWidth: w, clientHeight: h } = stage;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  controls.minDistance = fitDistance() * 0.45; controls.maxDistance = fitDistance() * 1.6;
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+camera.position.set(0, -0.3, fitDistance());
+
+// ---------- Cámara: frente / espalda ----------
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tween = null;
+function goView(view) {
+  state.view = view;
+  document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+  const to = new THREE.Vector3(0, -0.3, (view === 'front' ? 1 : -1) * fitDistance());
+  if (reduce) { camera.position.copy(to); controls.target.copy(TARGET); return; }
+  tween = { from: camera.position.clone(), to, t0: performance.now(), dur: 500 };
+}
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => goView(b.dataset.view)));
+
+renderer.setAnimationLoop((now) => {
+  if (tween) {
+    const k = Math.min(1, (now - tween.t0) / tween.dur), e = 1 - (1 - k) ** 3;
+    // interpolación por el lateral para no atravesar la prenda
+    const p = tween.from.clone().lerp(tween.to, e);
+    const side = Math.sin(Math.PI * e) * fitDistance() * (tween.from.z > 0 ? 1 : -1);
+    camera.position.set(p.x + side, p.y, p.z);
+    controls.target.copy(TARGET);
+    if (k === 1) tween = null;
+  }
+  controls.update();
+  renderer.render(scene, camera);
+});
+
+// ---------- Texturas de capas ----------
+function setFont(ctx, px) { ctx.font = `900 ${px}px Archivo, "Arial Black", sans-serif`; if ('fontStretch' in ctx) ctx.fontStretch = 'expanded'; }
+function star(ctx, cx, cy, r, ink) {
+  const k = r * 0.16;
+  ctx.fillStyle = ink; ctx.beginPath(); ctx.moveTo(cx, cy - r);
+  ctx.quadraticCurveTo(cx + k, cy - k, cx + r, cy); ctx.quadraticCurveTo(cx + k, cy + k, cx, cy + r);
+  ctx.quadraticCurveTo(cx - k, cy + k, cx - r, cy); ctx.quadraticCurveTo(cx - k, cy - k, cx, cy - r); ctx.fill();
+}
+const logoImages = {};
+function logoImage(ink) {
+  if (!logoImages[ink]) logoImages[ink] = new Promise((res, rej) => {
+    const img = new Image(); img.onload = () => res(img); img.onerror = rej;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(LOGO_SVG(ink));
+  });
+  return logoImages[ink];
+}
+const GRAPHICS = {
+  estrella: { name: 'Estrella', w: 1024, h: 1024, cm: 22, draw(ctx, w, h, ink) {
+    ctx.strokeStyle = ink; ctx.lineWidth = w * 0.012; ctx.beginPath(); ctx.arc(w / 2, h / 2, w * 0.46, 0, Math.PI * 2); ctx.stroke();
+    star(ctx, w / 2, h / 2, w * 0.38, ink); star(ctx, w * 0.82, h * 0.2, w * 0.07, ink);
+  } },
+  eclipse: { name: 'Eclipse', w: 1024, h: 1024, cm: 22, draw(ctx, w, h, ink) {
+    ctx.fillStyle = ink; ctx.beginPath(); ctx.arc(w / 2, h / 2, w * 0.4, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(w * 0.58, h * 0.45, w * 0.37, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over'; ctx.setLineDash([w * 0.01, w * 0.03]); ctx.strokeStyle = ink; ctx.lineWidth = w * 0.006;
+    ctx.beginPath(); ctx.arc(w / 2, h / 2, w * 0.47, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  } },
+  futuro: { name: 'The future is yours', w: 1024, h: 760, cm: 24, draw(ctx, w, h, ink) {
+    const s = w / 1024;
+    ctx.fillStyle = ink; ctx.textAlign = 'center';
+    ['THE', 'FUTURE', 'IS YOURS'].forEach((t, i) => fitText(ctx, t, w / 2, (220 + i * 240) * s, w * 0.96, 200 * s));
+  } },
+  logo: { name: 'Logo INBOUND', w: 1508, h: 240, cm: 9, async draw(ctx, w, h, ink) { ctx.drawImage(await logoImage(ink), 0, 0, w, h); } },
+};
+function fitText(ctx, text, x, y, maxW, base) {
+  setFont(ctx, base); const m = ctx.measureText(text).width;
+  if (m > maxW) setFont(ctx, Math.floor(base * maxW / m));
+  ctx.fillText(text, x, y);
+}
+function ink() { return state.color.dark ? '#FFFFFF' : '#080808'; }
+
+async function paint(layer) {
+  const { ctx, canvas: c } = layer;
+  ctx.clearRect(0, 0, c.width, c.height);
+  await layer.draw(ctx, c.width, c.height, ink());
+  layer.texture.needsUpdate = true;
+}
+function makeCanvas(w, h) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  return { canvas: c, ctx: c.getContext('2d') };
+}
+function makeMaterial(texture) {
+  return new THREE.MeshStandardMaterial({ map: texture, transparent: true, roughness: 0.85, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 });
+}
+
+// ---------- Colocar capas (decals) ----------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), helper = new THREE.Object3D();
+let order = 0;
+function hitFromEvent(e, objects) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(objects, false)[0];
+}
+function defaultHit(panelName, x = 0, y = -0.3) {
+  const panel = panels.find(p => p.name === panelName);
+  const z = panelName === 'Frente' ? 1 : -1;
+  ray.set(shirt.localToWorld(new THREE.Vector3(x, y, z)), new THREE.Vector3(0, 0, -z).transformDirection(shirt.matrixWorld));
+  return ray.intersectObject(panel, false)[0];
+}
+function setPose(layer, hit) {
+  layer.panel = hit.object;
+  layer.localPos = hit.object.worldToLocal(hit.point.clone());
+  layer.localNormal = hit.face.normal.clone();
+}
+function rebuild(layer) {
+  const { panel } = layer;
+  shirt.updateMatrixWorld(true);
+  const pos = panel.localToWorld(layer.localPos.clone());
+  const n = layer.localNormal.clone().transformDirection(panel.matrixWorld);
+  helper.position.copy(pos); helper.lookAt(pos.clone().add(n)); helper.rotateZ(THREE.MathUtils.degToRad(-layer.rot));
+  const w = layer.cm / 100, h = w / layer.aspect;
+  const geo = new DecalGeometry(panel, pos, helper.rotation, new THREE.Vector3(w, h, 0.2));
+  if (layer.mesh) { layer.mesh.geometry.dispose(); layer.mesh.geometry = geo; }
+  else { layer.mesh = new THREE.Mesh(geo, layer.material); layer.mesh.renderOrder = ++order; scene.add(layer.mesh); }
+  if (layer === selected) drawFrame(pos, n, w, h);
+}
+let pending = new Set();
+function queueRebuild(layer) {
+  if (pending.has(layer)) return;
+  pending.add(layer);
+  requestAnimationFrame(() => { pending.delete(layer); rebuild(layer); });
+}
+
+// Marco de selección (como en el reel de referencia)
+const frame = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x2F6BFF, depthTest: false }));
+frame.renderOrder = 9999; frame.visible = false; scene.add(frame);
+function drawFrame(pos, n, w, h) {
+  const pts = [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].map(([x, y]) => new THREE.Vector3(x, y, 0));
+  frame.geometry.setFromPoints(pts);
+  frame.position.copy(pos).addScaledVector(n, 0.01); frame.quaternion.copy(helper.quaternion); frame.visible = true;
+}
+
+async function addLayer(spec) {
+  const { canvas: c, ctx } = makeCanvas(spec.w, spec.h);
+  const texture = new THREE.CanvasTexture(c);
+  texture.colorSpace = THREE.SRGBColorSpace; texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const layer = { id: ++uid, kind: spec.kind, name: spec.name, cm: spec.cm, rot: 0, aspect: spec.w / spec.h,
+    canvas: c, ctx, texture, material: makeMaterial(texture), draw: spec.draw, srcPx: spec.srcPx, inkLum: spec.inkLum, fixedInk: spec.fixedInk };
+  await paint(layer);
+  // se coloca en el lado visible, en el primer hueco libre para no tapar otras capas
+  const side = state.view === 'front' ? 'Frente' : 'Espalda';
+  const used = layers.filter(l => l.panel.name === side).map(l => l.localPos);
+  const spot = SPOTS.find(([x, y]) => used.every(p => Math.hypot(p.x - x, p.y - y) > 0.09)) || SPOTS[0];
+  setPose(layer, defaultHit(side, spot[0], spot[1]));
+  layers.push(layer);
+  select(layer);
+  rebuild(layer);
+  refreshUI();
+}
+const SPOTS = [[0, -0.3], [0, -0.17], [0, -0.48], [0.12, -0.2], [-0.12, -0.2]];
+
+// ---------- Interacción en el lienzo ----------
+let dragging = null, downAt = null;
+canvas.addEventListener('pointerdown', (e) => {
+  downAt = { x: e.clientX, y: e.clientY };
+  const hit = hitFromEvent(e, layers.map(l => l.mesh).filter(Boolean));
+  if (!hit) return;                           // fuera de un gráfico: OrbitControls gira la prenda
+  const layer = layers.find(l => l.mesh === hit.object);
+  select(layer); dragging = layer; controls.enabled = false;
+  canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId);
+}, { capture: true });
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  const hit = hitFromEvent(e, panels);
+  if (hit) { setPose(dragging, hit); queueRebuild(dragging); }
+});
+function endDrag(e) {
+  if (dragging) { dragging = null; controls.enabled = true; canvas.classList.remove('dragging'); refreshChecks(); }
+  else if (downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 4) select(null);
+  downAt = null;
+}
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+
+// ---------- Panel ----------
+const $ = (id) => document.getElementById(id);
+const colorBox = $('colors');
+COLORS.forEach((c, i) => colorBox.insertAdjacentHTML('beforeend',
+  `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${i}" ${i === 0 ? 'checked' : ''} aria-label="${c.name}"><span></span></label>`));
+colorBox.addEventListener('change', async (e) => {
+  state.color = COLORS[+e.target.value];
+  fabric.color.set(state.color.hex);
+  for (const l of layers) if (!l.fixedInk) await paint(l);
+  refreshChecks();
+});
+document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('change', () => {
+  state.cut = i.value; shirt.scale.set(...CUTS[i.value]); layers.forEach(rebuild); refreshChecks();
+}));
+
+const gbox = $('graphics');
+for (const [id, g] of Object.entries(GRAPHICS)) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'gbtn'; b.innerHTML = `<img alt=""><span>${g.name}</span>`;
+  b.setAttribute('aria-label', `Añadir ${g.name}`);
+  const { canvas: c, ctx } = makeCanvas(g.w / 4, g.h / 4);
+  Promise.resolve(g.draw(ctx, c.width, c.height, '#080808')).then(() => { b.querySelector('img').src = c.toDataURL(); });
+  b.addEventListener('click', () => addLayer({ kind: 'grafico', name: g.name, w: g.w, h: g.h, cm: g.cm, draw: g.draw }));
+  gbox.append(b);
+}
+
+$('add-text').addEventListener('click', () => {
+  const text = $('frase').value.trim().toUpperCase();
+  if (!text) { $('frase').focus(); return; }
+  const { ctx } = makeCanvas(1, 1); setFont(ctx, 200);
+  const w = Math.min(4096, Math.ceil(ctx.measureText(text).width + 80));
+  addLayer({ kind: 'frase', name: `Frase: ${text}`, w, h: 260, cm: Math.min(28, 4 + text.length * 2.2),
+    draw: (c, cw, ch, ink) => { c.fillStyle = ink; c.textAlign = 'center'; c.textBaseline = 'middle'; fitText(c, text, cw / 2, ch / 2 + 10, cw - 40, 200); } });
+  $('frase').value = '';
+});
+
+$('upload').addEventListener('change', (e) => {
+  const file = e.target.files[0], err = $('upload-error');
+  err.hidden = true; e.target.value = '';
+  if (!file) return;
+  const okType = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'].includes(file.type);
+  if (!okType) { err.textContent = 'Ese archivo no es una imagen compatible. Sube un PNG, JPG, WEBP o SVG.'; err.hidden = false; return; }
+  if (file.size > 15 * 1024 * 1024) { err.textContent = 'La imagen pesa más de 15 MB. Redúcela y vuelve a subirla.'; err.hidden = false; return; }
+  const img = new Image(), url = URL.createObjectURL(file);
+  img.onload = () => {
+    const scale = Math.min(1, 2048 / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale)), h = Math.max(1, Math.round(img.naturalHeight * scale));
+    // luminancia media de los píxeles visibles, para el aviso de contraste
+    const probe = makeCanvas(64, Math.max(1, Math.round(64 * h / w))); probe.ctx.drawImage(img, 0, 0, probe.canvas.width, probe.canvas.height);
+    const d = probe.ctx.getImageData(0, 0, probe.canvas.width, probe.canvas.height).data;
+    let sum = 0, n = 0;
+    for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { const hex = '#' + [d[i], d[i + 1], d[i + 2]].map(v => v.toString(16).padStart(2, '0')).join(''); sum += lum(hex); n++; }
+    addLayer({ kind: 'imagen', name: `Imagen: ${file.name}`, w, h, cm: 20, srcPx: file.type === 'image/svg+xml' ? Infinity : img.naturalWidth,
+      inkLum: n ? sum / n : null, fixedInk: true, draw: (c, cw, ch) => c.drawImage(img, 0, 0, cw, ch) })
+      .finally(() => URL.revokeObjectURL(url));
+  };
+  img.onerror = () => { err.textContent = 'No se pudo leer la imagen. Prueba con otro archivo.'; err.hidden = false; URL.revokeObjectURL(url); };
+  img.src = url;
+});
+
+function select(layer) {
+  selected = layer;
+  if (!layer) frame.visible = false; else rebuild(layer);
+  refreshUI();
+}
+const size = $('size'), rot = $('rot');
+size.addEventListener('input', () => { if (!selected) return; selected.cm = +size.value; $('size-out').value = `${size.value} cm`; queueRebuild(selected); refreshChecks(); });
+rot.addEventListener('input', () => { if (!selected) return; selected.rot = +rot.value; $('rot-out').value = `${rot.value}°`; queueRebuild(selected); refreshChecks(); });
+$('center').addEventListener('click', () => {
+  if (!selected) return;
+  const name = selected.panel.name;
+  setPose(selected, defaultHit(name, 0, name === 'Frente' ? -0.3 : -0.28)); rebuild(selected); refreshChecks();
+});
+$('remove').addEventListener('click', () => {
+  if (!selected) return;
+  scene.remove(selected.mesh); selected.mesh.geometry.dispose(); selected.material.dispose(); selected.texture.dispose();
+  layers.splice(layers.indexOf(selected), 1); select(null);
+});
+
+function refreshUI() {
+  const list = $('layers'); list.replaceChildren();
+  layers.forEach(l => {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'layer-btn'; b.textContent = `${l.name} · ${l.panel?.name ?? ''}`;
+    b.setAttribute('aria-pressed', String(l === selected));
+    b.addEventListener('click', () => { select(l); goView(l.panel.name === 'Frente' ? 'front' : 'back'); });
+    const d = document.createElement('button');
+    d.type = 'button'; d.className = 'del'; d.textContent = '×'; d.setAttribute('aria-label', `Eliminar ${l.name}`);
+    d.addEventListener('click', () => { select(l); $('remove').click(); });
+    li.append(b, d); list.append(li);
+  });
+  $('layers-empty').hidden = layers.length > 0;
+  $('hint').textContent = layers.length ? 'Arrastra un gráfico para moverlo. Fuera de él, giras la prenda.' : 'Añade un gráfico desde el panel.';
+  $('sel').hidden = !selected;
+  if (selected) {
+    size.value = selected.cm; $('size-out').value = `${selected.cm} cm`;
+    rot.value = selected.rot; $('rot-out').value = `${selected.rot}°`;
+  }
+  refreshChecks();
+}
+
+function technique(l) {
+  if (l.kind === 'imagen' || l.kind === 'frase') return 'DTF';
+  if (l.name === 'Logo INBOUND' && l.cm <= 10) return 'alta densidad';
+  return l.cm >= 18 ? 'serigrafía' : 'DTF';
+}
+function refreshChecks() {
+  const ul = $('checks'); ul.replaceChildren();
+  const add = (ok, text) => { const li = document.createElement('li'); li.className = ok ? 'ok' : 'warn'; li.textContent = text; ul.append(li); return ok; };
+  if (!layers.length) { $('status').textContent = 'Añade al menos un gráfico, frase o imagen.'; return; }
+  let allOk = true;
+  for (const l of layers) {
+    const w = l.cm / 100, h = w / l.aspect;
+    allOk &= add(inPrintArea(l.panel.name, l.localPos.x, l.localPos.y, w, h, l.rot),
+      inPrintArea(l.panel.name, l.localPos.x, l.localPos.y, w, h, l.rot)
+        ? `${l.name}: dentro del área imprimible (${l.panel.name.toLowerCase()}).`
+        : `${l.name}: se sale del área imprimible. Muévelo hacia el centro o redúcelo.`);
+    if (l.kind === 'imagen' && Number.isFinite(l.srcPx)) {
+      const v = Math.round(dpi(l.srcPx, l.cm));
+      allOk &= add(v >= MIN_DPI, v >= MIN_DPI ? `${l.name}: resolución suficiente (${v} ppp).`
+        : `${l.name}: resolución baja (${v} ppp). Usa una imagen de al menos ${Math.ceil(l.cm / 2.54 * MIN_DPI)} px de ancho o redúcela.`);
+    }
+    if (l.kind === 'imagen' && l.inkLum != null) {
+      const ok = contrast(l.inkLum, lum(state.color.hex)) >= 1.6;
+      allOk &= add(ok, ok ? `${l.name}: contrasta con la prenda.` : `${l.name}: casi no contrasta con una prenda ${state.color.name.toLowerCase()}. Cambia el color de la camiseta o la imagen.`);
+    }
+    add(true, `${l.name}: técnica ${technique(l)}.`);
+  }
+  $('status').textContent = allOk ? 'Diseño validado: se puede producir.' : 'Revisa los avisos antes de pedirlo.';
+}
+
+$('export').addEventListener('click', () => {
+  const wasVisible = frame.visible; frame.visible = false;
+  renderer.render(scene, camera);
+  const a = document.createElement('a');
+  a.download = 'inbound-diseno-3d.png'; a.href = canvas.toDataURL('image/png'); a.click();
+  frame.visible = wasVisible;
+});
+
+// ---------- Cargar la camiseta ----------
+document.fonts.load('900 100px Archivo').catch(() => {}).finally(() => {
+  new GLTFLoader().load(window.CAMISETA_GLB || 'camiseta.glb', (g) => {
+    g.scene.traverse(o => { if (o.isMesh) { o.material = fabric; panels.push(o); } });
+    shirt.add(g.scene);
+    shirt.updateMatrixWorld(true);
+    loading.hidden = true;
+    refreshUI();
+    window.__inbound = { layers, panels, addLayer, GRAPHICS, select }; // para pruebas
+  }, undefined, () => {
+    loading.innerHTML = '<p>No se pudo cargar el modelo 3D. Comprueba que el archivo camiseta-glb.js está junto a esta página.</p>';
+  });
+});
+</script>
+</body>
+</html>

@@ -19,7 +19,25 @@ y entra a `http://<IP-de-tu-PC>:8080` desde el teléfono.
 index.html          Página completa (HTML + CSS + JS en línea)
 DESIGN.md           Sistema de diseño: paleta, tipografía, componentes y reglas
 assets/             Fotos de la marca, fondo del cierre y logo (logo-inbound.svg)
+prototipo-3d/       Prototipo del diseñador 3D (ver abajo)
 ```
+
+## Prototipo 3D (`prototipo-3d/`)
+
+Demostración funcional de la idea de la marca: el cliente coloca gráficos de INBOUND, su frase o su
+propia imagen sobre una camiseta en 3D, en móvil y en PC. Se abre con doble clic en `prototipo-3d/index.html`.
+
+- **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
+- **Diseño:** gráficos de la marca, frase propia e imagen subida; se arrastran sobre la tela, con tamaño y rotación.
+- **Validación:** área imprimible, resolución de imágenes (150 ppp mínimo), contraste con la prenda y técnica (serigrafía, DTF o alta densidad).
+- **Exportar:** descarga una imagen PNG del diseño.
+
+Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT) desde CDN, sin compilación.
+El modelo `camiseta.glb` lo genera `herramientas/generar_camiseta.py` con Blender 5
+(`camiseta-glb.js` es el mismo modelo empaquetado para poder abrir la página sin servidor).
+
+**Limitaciones del prototipo:** la camiseta es una malla procedural (sin pliegues reales); para la versión final
+hay que modelarla en CLO3D o Marvelous Designer con los patrones de INBOUND. Aún no hay paso de IA ni pedido online.
 
 ## Secciones
 
@@ -40,7 +58,7 @@ assets/             Fotos de la marca, fondo del cierre y logo (logo-inbound.svg
 - Precios del Drop 001 (por ahora los pedidos van por Instagram).
 - Logo oficial en vector (el actual está redibujado a partir del PDF).
 - Año de fundación: la foto del hero dice 2024 y la web 2025.
-- Prototipo de configurador 3D (three.js) para colocar diseños sobre la camiseta.
+- Modelo 3D realista de la camiseta (CLO3D / Marvelous) y paso de visualización con IA.
 
 ## Derechos
 

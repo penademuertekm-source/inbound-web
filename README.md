@@ -30,14 +30,19 @@ propia imagen sobre una camiseta en 3D, en móvil y en PC. Se abre con doble cli
 - **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
 - **Diseño:** gráficos de la marca, frase propia e imagen subida; se arrastran sobre la tela, con tamaño y rotación.
 - **Validación:** área imprimible, resolución de imágenes (150 ppp mínimo), contraste con la prenda y técnica (serigrafía, DTF o alta densidad).
+- **Herramientas (como la app de referencia):** deshacer / rehacer (también Ctrl+Z / Ctrl+Y), voltear el gráfico, girar la prenda 360° y compartir la imagen desde el móvil.
 - **Exportar:** descarga una imagen PNG del diseño.
 
 Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT) desde CDN, sin compilación.
-El modelo `camiseta.glb` lo genera `herramientas/generar_camiseta.py` con Blender 5
-(`camiseta-glb.js` es el mismo modelo empaquetado para poder abrir la página sin servidor).
 
-**Limitaciones del prototipo:** la camiseta es una malla procedural (sin pliegues reales); para la versión final
-hay que modelarla en CLO3D o Marvelous Designer con los patrones de INBOUND. Aún no hay paso de IA ni pedido online.
+**Modelo 3D:** [«T Shirt»](https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba) de funlab117,
+licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (permite uso comercial citando al autor).
+Se adaptó con `herramientas/preparar_camiseta_sketchfab.py` (Blender 5): sin capas interiores, enderezado,
+centrado y reducido de ~240 mil a ~59 mil caras. `camiseta-glb.js` es el mismo modelo empaquetado para abrir
+la página sin servidor. El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
+
+**Limitaciones del prototipo:** el modelo es de corte regular, no oversize; para la versión comercial conviene
+comprar o encargar un modelo con los patrones de INBOUND (CLO3D / Marvelous Designer). Sin paso de IA ni pedido online.
 
 ## Secciones
 

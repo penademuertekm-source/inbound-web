@@ -39,7 +39,11 @@ html{scroll-padding-top:calc(46svh + 12px)} /* que el foco no quede tapado por l
 .stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 .stage canvas.dragging{cursor:grabbing}
 .stage-hint{position:absolute;left:12px;right:12px;bottom:12px;margin:0;text-align:center;font-size:14px;color:var(--gray-text);pointer-events:none}
-.view-btns{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.stage-bar{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.stage-bar>*{pointer-events:auto}
+.group{display:flex;gap:6px}
+.btn.icon{min-width:44px;padding:0;font-size:20px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--white)}
 .loading{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;background:var(--tint)}
 .loading[hidden]{display:none}
 
@@ -114,9 +118,16 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 <main class="app">
   <section class="stage" aria-label="Vista 3D de la camiseta">
     <canvas id="c" aria-label="Camiseta en 3D. Arrastra para girarla; arrastra un gráfico para moverlo." role="img"></canvas>
-    <div class="view-btns" role="group" aria-label="Vista">
-      <button class="btn" type="button" data-view="front" aria-pressed="true">Frente</button>
-      <button class="btn" type="button" data-view="back" aria-pressed="false">Espalda</button>
+    <div class="stage-bar">
+      <div class="group" role="group" aria-label="Historial">
+        <button class="btn icon" type="button" id="undo" aria-label="Deshacer" title="Deshacer (Ctrl+Z)" disabled>↶</button>
+        <button class="btn icon" type="button" id="redo" aria-label="Rehacer" title="Rehacer (Ctrl+Y)" disabled>↷</button>
+      </div>
+      <div class="group" role="group" aria-label="Vista">
+        <button class="btn" type="button" data-view="front" aria-pressed="true">Frente</button>
+        <button class="btn" type="button" data-view="back" aria-pressed="false">Espalda</button>
+      </div>
+      <button class="btn" type="button" id="spin" aria-pressed="false">Girar</button>
     </div>
     <p class="stage-hint" id="hint" aria-live="polite">Añade un gráfico desde el panel.</p>
     <div class="loading" id="loading"><p>Cargando la camiseta 3D…</p></div>
@@ -174,6 +185,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
           <input type="range" id="rot" min="-180" max="180" step="1">
         </div>
         <div class="row">
+          <button class="btn" type="button" id="flip" aria-pressed="false">Voltear</button>
           <button class="btn" type="button" id="center">Centrar en el pecho</button>
           <button class="btn" type="button" id="remove">Eliminar capa</button>
         </div>
@@ -188,8 +200,10 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
     <div class="block row">
       <button class="btn btn-solid" type="button" id="export">Descargar imagen</button>
+      <button class="btn" type="button" id="share" hidden>Compartir</button>
       <a class="btn" href="../index.html#disena">Volver a la web</a>
     </div>
+    <p class="hint">Modelo 3D: <a href="https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba">«T Shirt»</a> de funlab117, licencia <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Adaptado (reducido y reorientado) para este prototipo.</p>
   </aside>
 </main>
 
@@ -212,7 +226,7 @@ const COLORS = [
   { name: 'Beige', hex: '#D6D0C5', dark: false },
 ];
 // Área imprimible en coordenadas de la pieza (metros; 0,0 = centro del cuello)
-const PRINT = { Frente: { x: 0.21, yMin: -0.66, yMax: -0.11 }, Espalda: { x: 0.21, yMin: -0.66, yMax: -0.05 } };
+const PRINT = { Frente: { x: 0.16, yMin: -0.64, yMax: -0.1 }, Espalda: { x: 0.16, yMin: -0.66, yMax: -0.06 } };
 const MIN_DPI = 150;
 const CUTS = { 'Oversize': [1, 1, 1], 'Boxy fit': [1.08, 0.93, 1.04] };
 const LOGO_SVG = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:${fill}}.logo-mark .s{fill:none;stroke:${fill};stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.5"/><path class="s" d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/><circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="${fill}" stroke-width=".6"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></svg>`;
@@ -271,7 +285,7 @@ let selected = null, uid = 0;
 
 function fitDistance() {
   const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  return Math.max(0.47 / t, 0.62 / (t * camera.aspect)) * 1.05;
+  return Math.max(0.45 / t, 0.5 / (t * camera.aspect)) * 1.05;
 }
 function resize() {
   const { clientWidth: w, clientHeight: h } = stage;
@@ -416,20 +430,45 @@ async function addLayer(spec) {
   const { canvas: c, ctx } = makeCanvas(spec.w, spec.h);
   const texture = new THREE.CanvasTexture(c);
   texture.colorSpace = THREE.SRGBColorSpace; texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  const layer = { id: ++uid, kind: spec.kind, name: spec.name, cm: spec.cm, rot: 0, aspect: spec.w / spec.h,
+  texture.wrapS = THREE.RepeatWrapping; texture.center.set(0.5, 0.5);   // permite voltear con repeat.x = -1
+  const layer = { id: ++uid, kind: spec.kind, name: spec.name, cm: spec.cm, rot: 0, flip: false, aspect: spec.w / spec.h,
     canvas: c, ctx, texture, material: makeMaterial(texture), draw: spec.draw, srcPx: spec.srcPx, inkLum: spec.inkLum, fixedInk: spec.fixedInk };
   await paint(layer);
   // se coloca en el lado visible, en el primer hueco libre para no tapar otras capas
   const side = state.view === 'front' ? 'Frente' : 'Espalda';
   const used = layers.filter(l => l.panel.name === side).map(l => l.localPos);
   const spot = SPOTS.find(([x, y]) => used.every(p => Math.hypot(p.x - x, p.y - y) > 0.09)) || SPOTS[0];
-  setPose(layer, defaultHit(side, spot[0], spot[1]));
+  setPose(layer, defaultHit(side, spot[0], spot[1]) || defaultHit(side, 0, -0.3));
   layers.push(layer);
   select(layer);
   rebuild(layer);
-  refreshUI();
+  commit();
 }
-const SPOTS = [[0, -0.3], [0, -0.17], [0, -0.48], [0.12, -0.2], [-0.12, -0.2]];
+
+// ---------- Historial (deshacer / rehacer) ----------
+const past = [], future = [];
+const snap = () => layers.map(l => ({ l, cm: l.cm, rot: l.rot, flip: l.flip, panel: l.panel, pos: l.localPos.clone(), normal: l.localNormal.clone() }));
+let current = [];
+function commit() {
+  past.push(current); if (past.length > 50) past.shift();
+  future.length = 0; current = snap(); refreshUI();
+}
+function restore(s) {
+  for (const l of layers) if (!s.some(x => x.l === l)) scene.remove(l.mesh);
+  layers.length = 0;
+  for (const x of s) {
+    Object.assign(x.l, { cm: x.cm, rot: x.rot, flip: x.flip, panel: x.panel, localPos: x.pos.clone(), localNormal: x.normal.clone() });
+    applyFlip(x.l); layers.push(x.l);
+    if (!x.l.mesh.parent) scene.add(x.l.mesh);
+    rebuild(x.l);
+  }
+  current = s;
+  select(layers.includes(selected) ? selected : null);
+}
+function undo() { if (past.length) { future.push(current); restore(past.pop()); } }
+function redo() { if (future.length) { past.push(current); restore(future.pop()); } }
+function applyFlip(l) { l.texture.repeat.x = l.flip ? -1 : 1; }
+const SPOTS = [[0, -0.28], [0, -0.16], [0, -0.44], [0.08, -0.17], [-0.08, -0.17]];
 
 // ---------- Interacción en el lienzo ----------
 let dragging = null, downAt = null;
@@ -447,7 +486,7 @@ canvas.addEventListener('pointermove', (e) => {
   if (hit) { setPose(dragging, hit); queueRebuild(dragging); }
 });
 function endDrag(e) {
-  if (dragging) { dragging = null; controls.enabled = true; canvas.classList.remove('dragging'); refreshChecks(); }
+  if (dragging) { dragging = null; controls.enabled = true; canvas.classList.remove('dragging'); commit(); }
   else if (downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 4) select(null);
   downAt = null;
 }
@@ -522,15 +561,31 @@ function select(layer) {
 const size = $('size'), rot = $('rot');
 size.addEventListener('input', () => { if (!selected) return; selected.cm = +size.value; $('size-out').value = `${size.value} cm`; queueRebuild(selected); refreshChecks(); });
 rot.addEventListener('input', () => { if (!selected) return; selected.rot = +rot.value; $('rot-out').value = `${rot.value}°`; queueRebuild(selected); refreshChecks(); });
+size.addEventListener('change', () => selected && commit());
+rot.addEventListener('change', () => selected && commit());
+$('flip').addEventListener('click', () => { if (!selected) return; selected.flip = !selected.flip; applyFlip(selected); commit(); });
 $('center').addEventListener('click', () => {
   if (!selected) return;
   const name = selected.panel.name;
-  setPose(selected, defaultHit(name, 0, name === 'Frente' ? -0.3 : -0.28)); rebuild(selected); refreshChecks();
+  setPose(selected, defaultHit(name, 0, name === 'Frente' ? -0.28 : -0.26)); rebuild(selected); commit();
 });
 $('remove').addEventListener('click', () => {
   if (!selected) return;
-  scene.remove(selected.mesh); selected.mesh.geometry.dispose(); selected.material.dispose(); selected.texture.dispose();
-  layers.splice(layers.indexOf(selected), 1); select(null);
+  // shortcut: no se liberan texturas para poder deshacer; liberar al guardar pedidos en producción
+  scene.remove(selected.mesh);
+  layers.splice(layers.indexOf(selected), 1); select(null); commit();
+});
+$('undo').addEventListener('click', undo);
+$('redo').addEventListener('click', redo);
+document.addEventListener('keydown', (e) => {
+  if (!(e.ctrlKey || e.metaKey) || e.target.closest('input[type=text], input:not([type])')) return;
+  const k = e.key.toLowerCase();
+  if (k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); redo(); }
+});
+$('spin').addEventListener('click', (e) => {
+  controls.autoRotate = !controls.autoRotate; controls.autoRotateSpeed = 4;
+  e.currentTarget.setAttribute('aria-pressed', String(controls.autoRotate));
 });
 
 function refreshUI() {
@@ -549,7 +604,9 @@ function refreshUI() {
   $('layers-empty').hidden = layers.length > 0;
   $('hint').textContent = layers.length ? 'Arrastra un gráfico para moverlo. Fuera de él, giras la prenda.' : 'Añade un gráfico desde el panel.';
   $('sel').hidden = !selected;
+  $('undo').disabled = !past.length; $('redo').disabled = !future.length;
   if (selected) {
+    $('flip').setAttribute('aria-pressed', String(selected.flip));
     size.value = selected.cm; $('size-out').value = `${selected.cm} cm`;
     rot.value = selected.rot; $('rot-out').value = `${selected.rot}°`;
   }
@@ -586,23 +643,39 @@ function refreshChecks() {
   $('status').textContent = allOk ? 'Diseño validado: se puede producir.' : 'Revisa los avisos antes de pedirlo.';
 }
 
-$('export').addEventListener('click', () => {
+function snapshot() {
   const wasVisible = frame.visible; frame.visible = false;
   renderer.render(scene, camera);
-  const a = document.createElement('a');
-  a.download = 'inbound-diseno-3d.png'; a.href = canvas.toDataURL('image/png'); a.click();
+  const url = canvas.toDataURL('image/png');
   frame.visible = wasVisible;
+  return url;
+}
+$('export').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = 'inbound-diseno-3d.png'; a.href = snapshot(); a.click();
 });
+// Compartir (móvil): solo si el navegador permite compartir archivos
+const probeFile = new File([''], 'x.png', { type: 'image/png' });
+if (navigator.canShare && navigator.canShare({ files: [probeFile] })) {
+  $('share').hidden = false;
+  $('share').addEventListener('click', async () => {
+    const blob = await (await fetch(snapshot())).blob();
+    const file = new File([blob], 'inbound-diseno-3d.png', { type: 'image/png' });
+    try { await navigator.share({ files: [file], title: 'Mi diseño INBOUND' }); } catch { /* el usuario canceló */ }
+  });
+}
 
 // ---------- Cargar la camiseta ----------
 document.fonts.load('900 100px Archivo').catch(() => {}).finally(() => {
   new GLTFLoader().load(window.CAMISETA_GLB || 'camiseta.glb', (g) => {
-    g.scene.traverse(o => { if (o.isMesh) { o.material = fabric; panels.push(o); } });
+    // solo Frente y Espalda reciben diseños; Mangas y Cuello son visuales
+    g.scene.traverse(o => { if (o.isMesh) { o.material = fabric; if (PRINT[o.name]) panels.push(o); } });
+    console.assert(panels.length === 2, 'el modelo debe tener las piezas Frente y Espalda');
     shirt.add(g.scene);
     shirt.updateMatrixWorld(true);
     loading.hidden = true;
     refreshUI();
-    window.__inbound = { layers, panels, addLayer, GRAPHICS, select }; // para pruebas
+    window.__inbound = { layers, panels, addLayer, GRAPHICS, select, undo, redo, controls }; // para pruebas
   }, undefined, () => {
     loading.innerHTML = '<p>No se pudo cargar el modelo 3D. Comprueba que el archivo camiseta-glb.js está junto a esta página.</p>';
   });

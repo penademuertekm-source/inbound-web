@@ -177,9 +177,35 @@ a{color:inherit}
 
 /* lines */
 .lines{display:grid;gap:0;margin:0;padding:0;list-style:none;border-top:1.5px solid currentColor}
-.line{display:grid;gap:var(--s2);padding:var(--s4) 0;border-bottom:1px solid var(--line-light)}
+.line{display:grid;gap:var(--s2);align-content:start;padding:var(--s4) 0 var(--s6);border-bottom:1px solid var(--line-light)}
 .line p{margin:0;max-width:52ch}
-@media (min-width:860px){.line{grid-template-columns:1fr 1fr;align-items:baseline}}
+.line-media{margin:0 0 var(--s1)}
+.line-media img,.lineas-media img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.line-num{color:var(--gray)}
+.line-tags{color:var(--white)}
+.swatches{display:flex;gap:6px;margin:var(--s1) 0 0;padding:0;list-style:none}
+.swatches li{width:18px;height:18px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.lineas-media{display:none}
+@media (min-width:860px){
+  .line{grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:var(--s4)}
+  .line-media{grid-row:span 6;margin:0}
+}
+/* Índice con foto fija: la foto cambia con una pasada de racleta al llegar a cada línea (sin JS) */
+@supports (timeline-scope:--a) and (animation-timeline:view()){
+  @media (min-width:1024px) and (prefers-reduced-motion:no-preference){
+    .lineas-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s8);align-items:start;timeline-scope:--l2,--l3}
+    .lineas-media{display:block;position:sticky;top:calc(61px + var(--s4));width:min(100%,calc((100svh - 61px - var(--s8)) * .8));aspect-ratio:4/5}
+    .lineas-media img{position:absolute;inset:0;height:100%}
+    .lineas-media img+img{clip-path:inset(0 100% 0 0);animation:racleta linear both;animation-range:cover 26% cover 40%}
+    .lineas-media img:nth-child(2){animation-timeline:--l2}
+    .lineas-media img:nth-child(3){animation-timeline:--l3}
+    .line:nth-child(2){view-timeline:--l2 block}
+    .line:nth-child(3){view-timeline:--l3 block}
+    .line{display:grid;grid-template-columns:none;min-height:min(72svh,640px);align-content:center}
+    .line-media{display:none}
+  }
+}
+@keyframes racleta{to{clip-path:inset(0 0 0 0)}}
 
 /* close + footer */
 /* Cierre: réplica de la pág. 10 del PDF (Montserrat = tipografía del original) */
@@ -442,11 +468,40 @@ a{color:inherit}
       <h2 id="lineas-title" class="display h2-m">Tu estilo, nuestra esencia</h2>
       <p class="lede muted">Tres líneas. La misma base.</p>
     </div>
-    <ul class="lines">
-      <li class="line"><h3 class="h3">Clásica</h3><p class="muted">Camisas de botón, manga larga y corta, en negro, blanco, gris, beige y azul marino. Diseño mínimo.</p></li>
-      <li class="line"><h3 class="h3">Drop top</h3><p class="muted">Drop top, oversize y boxy fit en tonos neutros.</p></li>
-      <li class="line"><h3 class="h3">Gráfica</h3><p class="muted">Estampados originales en oversize y boxy fit, con raíz en la cultura urbana.</p></li>
-    </ul>
+    <!-- Fotos: PDF de estrategia p08 (KlingAI) recortadas sin la interfaz de tienda; provisionales hasta tener originales.
+         Pendiente del cliente: la foto de Clásica es camiseta, el texto dice camisa de botón. -->
+    <div class="lineas-body">
+      <div class="lineas-media" aria-hidden="true">
+        <img src="assets/lineas/clasica.jpg" alt="" width="600" height="750" loading="lazy">
+        <img src="assets/lineas/drop-top.jpg" alt="" width="600" height="750" loading="lazy">
+        <img src="assets/lineas/grafica.jpg" alt="" width="600" height="750" loading="lazy">
+      </div>
+      <ol class="lines">
+        <li class="line">
+          <figure class="line-media"><img src="assets/lineas/clasica.jpg" alt="Dos modelos de frente y de espalda con camiseta negra lisa y logo INBOUND discreto" width="600" height="750" loading="lazy"></figure>
+          <p class="data line-num">01</p>
+          <h3 class="h3">Clásica</h3>
+          <p class="data line-tags">Clásico · Elegante · Atemporal</p>
+          <p class="muted">Camisas de botón, manga larga y corta. Diseño mínimo: los detalles marcan la diferencia.</p>
+          <ul class="swatches" aria-label="Colores: negro, blanco, gris, beige y azul marino"><li style="--c:#080808"></li><li style="--c:#FFFFFF"></li><li style="--c:#858585"></li><li style="--c:#D6D0C5"></li><li style="--c:#1F2A44"></li></ul>
+        </li>
+        <li class="line">
+          <figure class="line-media"><img src="assets/lineas/drop-top.jpg" alt="Modelo de frente y de espalda con drop top negro con el gráfico Destello" width="600" height="750" loading="lazy"></figure>
+          <p class="data line-num">02</p>
+          <h3 class="h3">Drop top</h3>
+          <p class="data line-tags">Drop top · Moderna · Versátil</p>
+          <p class="muted">Drop top, oversize y boxy fit en tonos neutros. Cómodas para el día a día.</p>
+          <ul class="swatches" aria-label="Colores: negro, blanco, gris y beige"><li style="--c:#080808"></li><li style="--c:#FFFFFF"></li><li style="--c:#858585"></li><li style="--c:#D6D0C5"></li></ul>
+        </li>
+        <li class="line">
+          <figure class="line-media"><img src="assets/lineas/grafica.jpg" alt="Dos modelos con camiseta oversize negra, una de espalda con estampado de siluetas azules" width="600" height="750" loading="lazy"></figure>
+          <p class="data line-num">03</p>
+          <h3 class="h3">Gráfica</h3>
+          <p class="data line-tags">Estampados · Urbano · Expresión</p>
+          <p class="muted">Estampados originales en oversize y boxy fit, con raíz en la cultura urbana. Variedad de colores y combinaciones.</p>
+        </li>
+      </ol>
+    </div>
   </section>
 
   <section class="closing" aria-label="Comprar">

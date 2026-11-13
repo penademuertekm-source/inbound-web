@@ -79,6 +79,7 @@ Escala modular 1.333 (expresiva), base 16px:
 | Ficha de producto | Componente | Prenda del Drop 001 | cuadrada, fondo blanco, código IB-00X, CTA "Pedir por DM" |
 | Paso de proceso | Componente | Una etapa de "Del diseño a la prenda" (secuencia real: numerada) | 7 pasos |
 | Técnica | Componente | Serigrafía / DTF / Alta densidad con foto | 3 |
+| Índice de líneas | Patrón | "Tu estilo, nuestra esencia": foto 4:5 fija a la izquierda que cambia con una pasada de racleta (clip-path ligado al scroll) al llegar a cada línea; filas con número, nombre, descriptores (Dato) y swatches | Escritorio ≥1024 con soporte de `timeline-scope`; sin soporte, en tableta o con reduced-motion, la foto va junto a cada fila |
 | Configurador | Patrón | Diseña tu INBOUND: vista previa SVG + controles + validación + resumen | — |
 
 ## Layout
@@ -102,7 +103,7 @@ Plano. Sin sombras. La jerarquía se construye con contraste negro/hueso, tamañ
 - No añadir colores saturados ni degradados decorativos.
 - No usar sombras ni tarjetas redondeadas idénticas.
 - No usar etiquetas en mayúsculas espaciadas encima de cada título.
-- No animar cada sección: un solo momento de movimiento (el wordmark del hero se expande al cargar).
+- No animar cada sección: el movimiento solo donde explica algo (hoy, el cambio de foto del índice de líneas). La Fase 2 añadirá aquí la sección Motion completa.
 - No inventar precios: el pedido se cierra por Instagram hasta que exista checkout.
 
 ## Responsive

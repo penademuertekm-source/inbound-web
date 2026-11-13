@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INBOUND STUDIO® | Heavyweight Oversize Culture</title>
+<meta name="description" content="Camisetas boxy fit en algodón 310+ GSM. Diseña tu INBOUND o compra el Drop 001, stock limitado.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Paleta de "Identidad_visual_INBOUND.pdf" */
+  --ink:#080808; --white:#FFFFFF; --gray:#858585; --beige:#D6D0C5;
+  /* derivados: --gray-text oscurece el gris para llegar a 4.5:1 sobre blanco; --tint es beige al 45% sobre blanco */
+  --gray-text:#6E6E6E; --tint:#EEEBE6;
+  --line-dark:rgba(0,0,0,.18); --line-light:rgba(255,255,255,.22);
+  --gutter:clamp(16px,4vw,56px);
+  --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s6:48px; --s8:64px; --s12:96px; --s18:144px;
+  --font:"Archivo","Arial Narrow",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+section[id]{scroll-margin-top:63px}
+@media (max-width:599px){section[id]{scroll-margin-top:110px}}
+body{margin:0;background:var(--ink);color:var(--white);font-family:var(--font);font-size:16px;line-height:1.55;font-stretch:100%;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--white);outline-offset:3px}
+.light :focus-visible{outline-color:var(--ink)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* type roles */
+.display{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:.88;margin:0}
+.h2{font-size:clamp(38px,6.4vw,96px)}
+.label{font-stretch:72%;font-weight:600;font-size:14px;letter-spacing:.02em}
+.lede{font-size:clamp(18px,1.6vw,21px);max-width:52ch;margin:0}
+.muted{color:var(--gray)}
+.light .muted{color:var(--gray-text)}
+
+/* sections */
+.section{padding:var(--s12) var(--gutter)}
+.light{background:var(--white);color:var(--ink)}
+.section-head{display:grid;gap:var(--s3);margin-bottom:var(--s8);max-width:1100px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;border:1.5px solid currentColor;font:inherit;font-stretch:72%;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;background:transparent;color:inherit;transition:opacity .25s,background-color .25s}
+/* Guía: botones negros con texto blanco; sobre fondo negro se usa la versión invertida */
+.btn-solid{background:var(--white);color:var(--ink);border-color:var(--white)}
+.light .btn-solid{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.btn-solid:hover{opacity:.8}
+.btn-ghost:hover{background:rgba(133,133,133,.2)}
+
+/* header */
+.site-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:var(--s4);padding:14px var(--gutter);background:var(--ink);border-bottom:1px solid var(--line-light)}
+.logo{font-stretch:125%;font-weight:900;font-size:20px;letter-spacing:-.01em;text-decoration:none}
+.logo sup{font-size:.5em;font-weight:600}
+.nav{display:flex;gap:var(--s3);flex:1}
+.nav a,.ig-link{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap;border-bottom:1.5px solid transparent}
+.nav a:hover,.ig-link:hover{border-color:currentColor}
+.logo{display:inline-flex;align-items:center;min-height:44px}
+/* móvil: la nav baja a su propia fila para que se vean las cuatro secciones */
+@media (max-width:599px){
+  .site-header{flex-wrap:wrap;row-gap:0;padding-bottom:4px}
+  .nav{order:3;flex-basis:100%;justify-content:space-between}
+  .ig-link{margin-left:auto}
+}
+.skip{position:absolute;left:var(--gutter);top:-100px;z-index:20;background:var(--white);color:var(--ink);padding:12px 18px;border-radius:999px;font-weight:700}
+.skip:focus{top:8px}
+
+/* hero */
+.hero{padding:var(--s6) var(--gutter) 0;overflow:hidden}
+.hero-grid{display:grid;gap:var(--s6);align-items:end}
+.hero-copy{display:grid;gap:var(--s3);align-content:end;padding-bottom:var(--s4)}
+.hero-copy .claim{font-stretch:125%;font-weight:800;font-size:clamp(30px,3.6vw,52px);line-height:1;letter-spacing:-.015em;margin:0;max-width:14ch}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:var(--s2)}
+.hero-photo{aspect-ratio:3/4;object-fit:cover;width:100%;max-height:max(320px,calc(100svh - 14.5vw - 230px));filter:grayscale(.35) contrast(1.05)}
+.hero{container-type:inline-size}
+.wordmark{font-size:calc(100cqi / 6.35);white-space:nowrap;margin:var(--s3) 0 0;padding-bottom:.02em;animation:stretch .9s cubic-bezier(.2,.7,.1,1) .15s both;contain:layout}
+@keyframes stretch{from{font-stretch:62%;opacity:0}30%{opacity:1}to{font-stretch:125%}}
+.hero-specs{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);padding:var(--s2) 0 var(--s3);border-top:1px solid var(--line-light)}
+@media (min-width:860px){
+  .hero-grid{grid-template-columns:1fr minmax(320px,38%)}
+}
+
+/* configurator */
+.config{display:grid;gap:var(--s6)}
+.preview{position:relative;background:var(--tint);display:grid;place-items:center;padding:var(--s4) var(--s2) var(--s2);align-self:start}
+.preview svg{width:100%;max-width:520px;height:auto}
+.view-toggle{display:flex;gap:8px;justify-content:center;margin-top:var(--s2)}
+.controls{display:grid;gap:var(--s4);align-content:start}
+.field{border:0;margin:0;padding:0;display:grid;gap:12px}
+.field legend,.field>label:first-child{padding:0;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);font-stretch:72%;font-weight:600}
+.chip input:checked+span{background:var(--ink);border-color:var(--ink);color:var(--white)}
+.chip input:focus-visible+span{outline:2px solid var(--ink);outline-offset:3px}
+.chip:hover span{background:rgba(0,0,0,.06)}
+.chip input:checked:hover+span{background:var(--ink)}
+.swatch span{width:44px;height:44px;padding:0;border-radius:50%;border:1.5px solid var(--gray);background:var(--c)}
+.swatch input:checked+span{background:var(--c);border-color:var(--white);box-shadow:0 0 0 2px var(--ink)}
+.swatch input:checked:hover+span{background:var(--c)}
+.text-input{min-height:48px;width:100%;max-width:420px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;background:var(--tint);font:inherit;font-stretch:100%;text-transform:uppercase}
+.text-input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.hint{font-size:14px;color:var(--gray-text);margin:0}
+.check{border-top:1.5px solid var(--ink);padding-top:var(--s3);display:grid;gap:var(--s2)}
+.check h3{margin:0;font-stretch:125%;font-weight:850;font-size:21px;text-transform:uppercase}
+.check ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.check li{display:grid;grid-template-columns:130px 1fr;gap:var(--s2);border-bottom:1px solid var(--line-dark);padding-bottom:8px}
+.check li b{font-stretch:72%;font-weight:600}
+.order-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.status{min-height:1.55em;margin:0;font-weight:600}
+@media (min-width:1024px){
+  .config{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:var(--s8)}
+  .preview{position:sticky;top:80px}
+}
+
+/* drop */
+.drop-grid{display:grid;gap:var(--s3)}
+.product{display:grid;gap:12px;align-content:start}
+.product img{width:100%;aspect-ratio:1;object-fit:cover;background:#1a1a1a}
+.product h3{margin:0;font-stretch:125%;font-weight:850;font-size:clamp(21px,2vw,28px);text-transform:uppercase;line-height:1}
+.product-meta{display:flex;justify-content:space-between;gap:var(--s2);align-items:baseline;flex-wrap:wrap}
+.stock{font-stretch:72%;font-weight:600;font-size:14px}
+.stock::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--beige);margin-right:8px;vertical-align:1px}
+.product a{font-weight:600;display:inline-flex;align-items:center;min-height:44px;justify-self:start}
+.site-footer a{display:inline-flex;align-items:center;min-height:44px}
+@media (min-width:700px){.drop-grid{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1024px){
+  .drop-grid{grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:auto auto}
+  .product.featured{grid-row:span 2;grid-template-rows:1fr auto}
+  .product.featured img{aspect-ratio:auto;height:100%;min-height:0}
+}
+
+/* process */
+.steps{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,280px);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 var(--s3);margin:0;list-style:none;scrollbar-color:var(--ink) transparent}
+.step{scroll-snap-align:start;display:grid;gap:12px;align-content:start;border-top:1.5px solid var(--ink);padding-top:var(--s2)}
+.step-num{font-stretch:125%;font-weight:900;font-size:44px;line-height:1}
+.step h3{margin:0;font-stretch:125%;font-weight:850;font-size:21px;text-transform:uppercase}
+.step p{margin:0}
+.step img{width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--ink);filter:grayscale(1)}
+.scroll-hint{margin-top:var(--s2)}
+
+/* workshop */
+.techs{display:grid;gap:var(--s4)}
+.tech{display:grid;gap:12px;align-content:start}
+.tech img{width:100%;aspect-ratio:4/3;object-fit:cover;filter:grayscale(1) contrast(1.1)}
+.tech h3{margin:0;font-stretch:125%;font-weight:850;font-size:clamp(24px,2.4vw,32px);text-transform:uppercase;line-height:1}
+.tech p{margin:0;max-width:40ch}
+@media (min-width:860px){.techs{grid-template-columns:repeat(3,1fr)}}
+.plant{margin:var(--s12) 0 0;display:grid;gap:var(--s3)}
+.plant img{width:100%;aspect-ratio:3/2;object-fit:cover}
+.plant figcaption{max-width:62ch}
+@media (min-width:1024px){.plant{grid-template-columns:2fr 1fr;align-items:end}}
+
+/* lines */
+.lines{display:grid;gap:0;margin:0;padding:0;list-style:none;border-top:1.5px solid var(--ink)}
+.line{display:grid;gap:var(--s2);padding:var(--s4) 0;border-bottom:1px solid var(--line-dark)}
+.line h3{margin:0;font-stretch:125%;font-weight:900;font-size:clamp(32px,4.4vw,64px);text-transform:uppercase;line-height:.9}
+.line p{margin:0;max-width:52ch}
+@media (min-width:860px){.line{grid-template-columns:1fr 1fr;align-items:baseline}}
+
+/* close + footer */
+/* Cierre: réplica de la pág. 10 del PDF (Montserrat = tipografía del original) */
+.closing{position:relative;display:grid;place-items:center;text-align:center;width:100%;aspect-ratio:16/9;min-height:560px;max-height:100svh;padding:0 var(--gutter);background:var(--ink) url(assets/cierre-fondo.png) center/cover;font-family:"Montserrat",var(--font);color:var(--white)}
+.closing-inner{display:grid;justify-items:center;margin-top:-9.6%}
+.closing .logo-mark{width:clamp(110px,10.4vw,180px);height:auto;filter:drop-shadow(0 0 4px rgba(255,255,255,.35))}
+.closing-tag{margin:clamp(10px,1.15vw,20px) -.36em 0 0;font-weight:500;font-size:clamp(9px,.8vw,12px);letter-spacing:.36em;line-height:1.65;text-transform:uppercase;color:rgba(255,255,255,.65)}
+.cta-glow{margin-top:clamp(22px,4vw,60px);display:inline-flex;align-items:center;gap:.45em;padding:.56em .95em .56em 1.15em;border:2px solid #DDDDDD;border-radius:999px;font-weight:500;font-size:clamp(20px,3.05vw,44px);letter-spacing:.12em;line-height:1.2;text-decoration:none;text-transform:uppercase;color:var(--white);text-shadow:0 0 8px rgba(255,255,255,.45);box-shadow:0 0 10px rgba(255,255,255,.25),inset 0 0 8px rgba(255,255,255,.12);transition:box-shadow .3s}
+.cta-glow:hover{box-shadow:0 0 22px rgba(255,255,255,.42),inset 0 0 14px rgba(255,255,255,.2)}
+.cta-arrow{width:.55em;height:auto;margin-left:-.06em;filter:drop-shadow(0 0 4px rgba(255,255,255,.45))}
+.closing-meta{position:absolute;left:0;right:0;bottom:9.2%;margin:0;font-weight:500;font-size:clamp(8px,.61vw,9px);letter-spacing:.38em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.closing-meta span{margin:0 1.2em}
+@media (max-width:599px){
+  .closing-tag,.closing-meta{letter-spacing:.24em}
+  .closing-tag{margin-right:-.24em}
+}
+.site-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s3);padding:var(--s4) var(--gutter);border-top:1px solid var(--line-light)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .wordmark{animation:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#top">Saltar al contenido</a>
+
+<header class="site-header">
+  <a class="logo" href="#top" aria-label="INBOUND, inicio">INBOUND<sup>®</sup></a>
+  <nav class="nav label" aria-label="Secciones">
+    <a href="#disena">Diseña</a>
+    <a href="#drop">Drop 001</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#taller">Taller</a>
+  </nav>
+  <a class="ig-link label" href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Instagram</a>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="claim" lang="en">Heavyweight Oversize Culture.</p>
+        <p class="lede muted">Camisetas boxy fit en algodón de 310 gramos o más. Elige una del Drop 001 o diseña la tuya con los elementos de la marca.</p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#disena">Diseña tu camiseta</a>
+          <a class="btn btn-ghost" href="#drop">Ver el Drop 001</a>
+        </div>
+      </div>
+      <img class="hero-photo" src="assets/hero-espaldas.jpg" alt="Dos modelos de espaldas con camisetas negras oversize de INBOUND: una con el logo, otra con una huella dactilar gigante." width="600" height="800">
+    </div>
+    <h1 id="hero-title" class="display wordmark">Inbound</h1>
+    <div class="hero-specs label muted">
+      <span>Boxy fit</span><span>Algodón 310+ GSM</span><span>Drop 001, stock limitado</span><span>Est. 2025</span>
+    </div>
+  </section>
+
+  <section id="disena" class="section light" aria-labelledby="disena-title">
+    <div class="section-head">
+      <h2 id="disena-title" class="display h2">Diseña tu INBOUND</h2>
+      <p class="lede muted">Elige el corte, el color y el gramaje. Combina gráficos y una frase. Revisamos que se pueda producir antes de que la pidas.</p>
+    </div>
+
+    <div class="config">
+      <div class="preview">
+        <svg id="tee" viewBox="0 0 440 470" role="img" aria-labelledby="tee-desc">
+          <desc id="tee-desc">Vista previa de tu camiseta</desc>
+          <path id="tee-body" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>
+          <path id="tee-neck" fill="none" stroke-width="7"/>
+          <g id="tee-print"></g>
+        </svg>
+        <div class="view-toggle" role="group" aria-label="Vista">
+          <label class="chip"><input type="radio" name="view" value="espalda" checked><span>Espalda</span></label>
+          <label class="chip"><input type="radio" name="view" value="frente"><span>Frente</span></label>
+        </div>
+      </div>
+
+      <form class="controls" id="config-form">
+        <fieldset class="field">
+          <legend class="label">Corte</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="corte" value="Oversize" checked><span>Oversize</span></label>
+            <label class="chip"><input type="radio" name="corte" value="Boxy fit"><span>Boxy fit</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="label">Color de la prenda</legend>
+          <div class="chips" id="colors"></div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="label">Gramaje</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="gramaje" value="250 g"><span>250 g, más fluida</span></label>
+            <label class="chip"><input type="radio" name="gramaje" value="310 g" checked><span>310 g, más estructura</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend class="label">Gráfico en la espalda</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="grafico" value="Estrella" checked><span>Estrella</span></label>
+            <label class="chip"><input type="radio" name="grafico" value="Eclipse"><span>Eclipse</span></label>
+            <label class="chip"><input type="radio" name="grafico" value="The future is yours"><span lang="en">The future is yours</span></label>
+            <label class="chip"><input type="radio" name="grafico" value="Logo grande"><span>Logo grande</span></label>
+            <label class="chip"><input type="radio" name="grafico" value="Sin gráfico"><span>Sin gráfico</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label class="label" for="frase">Frase en el pecho</label>
+          <input class="text-input" id="frase" name="frase" maxlength="18" value="INBOUND" autocomplete="off" aria-describedby="frase-hint">
+          <p class="hint" id="frase-hint">Hasta 18 caracteres. Déjala vacía si no quieres frase.</p>
+        </div>
+
+        <fieldset class="field">
+          <legend class="label">Talla</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="talla" value="S"><span>S</span></label>
+            <label class="chip"><input type="radio" name="talla" value="M"><span>M</span></label>
+            <label class="chip"><input type="radio" name="talla" value="L" checked><span>L</span></label>
+            <label class="chip"><input type="radio" name="talla" value="XL"><span>XL</span></label>
+          </div>
+        </fieldset>
+
+        <div class="check">
+          <h3>Tu diseño</h3>
+          <ul id="summary"></ul>
+          <div class="order-actions">
+            <button class="btn btn-solid" type="button" id="copy-order">Copiar pedido</button>
+            <a class="btn btn-ghost" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Abrir chat de Instagram</a>
+          </div>
+          <p class="status" id="status" role="status"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="drop" class="section" aria-labelledby="drop-title">
+    <div class="section-head">
+      <h2 id="drop-title" class="display h2">Drop 001</h2>
+      <p class="lede muted">La primera tirada de INBOUND. Camisetas boxy fit en algodón pesado, con stock limitado por diseño.</p>
+    </div>
+    <div class="drop-grid">
+      <article class="product featured">
+        <img src="assets/drop-celestial.png" alt="Camiseta negra con gráfico azul de una figura iluminada dentro de un halo." loading="lazy" width="480" height="480">
+        <div class="product-meta"><h3>Celestial</h3><span class="stock">En stock</span></div>
+        <p class="muted" style="margin:0">Boxy fit, algodón 310 g, serigrafía en la espalda.</p>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
+      </article>
+      <article class="product">
+        <img src="assets/drop-balaclava.jpg" alt="Camiseta negra con retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="400" height="389">
+        <div class="product-meta"><h3>Anónimo 26</h3><span class="stock">En stock</span></div>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
+      </article>
+      <article class="product">
+        <img src="assets/drop-nucleo.png" alt="Modelo con camiseta negra INBOUND con un gráfico de núcleo rojo en la espalda." loading="lazy" width="374" height="560">
+        <div class="product-meta"><h3>Núcleo</h3><span class="stock">En stock</span></div>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
+      </article>
+      <article class="product">
+        <img src="assets/drop-fantasma.jpg" alt="Dos camisetas negras: una lisa con logo INBOUND y otra con dos figuras azules difuminadas." loading="lazy" width="624" height="576">
+        <div class="product-meta"><h3>Fantasma</h3><span class="stock">En stock</span></div>
+        <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por Instagram</a>
+      </article>
+      <article class="product">
+        <img src="assets/estudio-bocetos.jpg" alt="Diseñador con capucha frente a una pared de bocetos de camisetas con notas de próximamente." loading="lazy" width="576" height="720">
+        <div class="product-meta"><h3>Drop 002</h3><span class="stock muted">Próximamente</span></div>
+        <a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Seguir en Instagram</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="proceso" class="section light" aria-labelledby="proceso-title">
+    <div class="section-head">
+      <h2 id="proceso-title" class="display h2">Del diseño a la prenda</h2>
+      <p class="lede muted">Siete pasos entre tu idea y la puerta de tu casa.</p>
+    </div>
+    <ol class="steps" tabindex="0" aria-label="Pasos del proceso, desplázate horizontalmente">
+      <li class="step"><span class="step-num">01</span><h3>Elige</h3><p>Corte oversize o boxy fit, el color y el gramaje de la tela según la estructura que buscas.</p><img src="assets/paso-elige.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">02</span><h3>Diseña</h3><p>Combina gráficos y frases de la marca y mira tu prototipo antes de pedirlo.</p><img src="assets/paso-disena.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">03</span><h3>Validamos</h3><p>El sistema verifica que el diseño mantenga la identidad de la marca y se pueda producir.</p><img src="assets/paso-valida.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">04</span><h3>Producimos</h3><p>Elegimos la técnica ideal: serigrafía, DTF o alta densidad.</p><img src="assets/paso-produce.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">05</span><h3>Controlamos</h3><p>Revisamos estampado, medidas y acabados.</p><img src="assets/paso-controla.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">06</span><h3>Empacamos</h3><p>Antes de cerrar la caja verificamos medidas, ubicación, colores y acabados.</p><img src="assets/paso-empaca.png" alt="" loading="lazy"></li>
+      <li class="step"><span class="step-num">07</span><h3>Entregamos</h3><p>Tu pedido llega a la puerta de tu casa.</p><img src="assets/paso-entrega.png" alt="" loading="lazy"></li>
+    </ol>
+    <p class="hint scroll-hint">Desliza para ver los siete pasos.</p>
+  </section>
+
+  <section id="taller" class="section" aria-labelledby="taller-title">
+    <div class="section-head">
+      <h2 id="taller-title" class="display h2">Cómo se imprime una INBOUND</h2>
+      <p class="lede muted">Serigrafía para los diseños grandes, DTF para las letras y marquillas en alta densidad. Así cada camiseta dura y se siente premium.</p>
+    </div>
+    <div class="techs">
+      <article class="tech">
+        <img src="assets/tec-serigrafia.jpg" alt="Marco de serigrafía con el logo INBOUND y la frase The future is yours." loading="lazy">
+        <h3>Serigrafía</h3>
+        <p class="muted">Para gráficos grandes. Cada diseño necesita su propio marco, por eso es la etapa que más tiempo y cuidado pide.</p>
+      </article>
+      <article class="tech">
+        <img src="assets/tec-dtf.jpg" alt="Impresora DTF imprimiendo una tira con el logo INBOUND repetido." loading="lazy">
+        <h3>DTF</h3>
+        <p class="muted">Para letras y detalles finos. Se imprime en film y se transfiere a la prenda con prensa térmica.</p>
+      </article>
+      <article class="tech">
+        <img src="assets/tec-alta-densidad.png" alt="Máquina de marquillas en alta densidad estampando el logo INBOUND." loading="lazy">
+        <h3>Alta densidad</h3>
+        <p class="muted">Para las marquillas. Relieve que se nota al tacto y aguanta lavado tras lavado.</p>
+      </article>
+    </div>
+    <figure class="plant">
+      <img src="assets/taller-planta.png" alt="Plano 3D del taller INBOUND con zonas de diseño, almacenes, impresora DTF, prensa térmica, bordado, corte, confección, control de calidad y despacho." loading="lazy">
+      <figcaption class="muted">Todo pasa en el mismo taller: diseño, almacén de materia prima, impresión DTF, prensa térmica, bordado, corte, confección, control de calidad, empaque y despacho.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section light" aria-labelledby="lineas-title">
+    <div class="section-head">
+      <h2 id="lineas-title" class="display h2">Tu estilo, nuestra esencia</h2>
+      <p class="lede muted">Tres líneas con la misma base: buena tela, buen corte y detalles que marcan la diferencia.</p>
+    </div>
+    <ul class="lines">
+      <li class="line"><h3>Clásica</h3><p>Camisas de botón, manga larga y corta. Negro, blanco, gris, beige y azul marino, con diseños mínimos.</p></li>
+      <li class="line"><h3>Drop top</h3><p>Drop top, oversize y boxy fit en tonos neutros. Cómodas y versátiles para el día a día.</p></li>
+      <li class="line"><h3>Gráfica</h3><p>Estampados originales, oversize y boxy fit. Gráficos llamativos con raíz en la cultura urbana.</p></li>
+    </ul>
+  </section>
+
+  <section class="closing" aria-label="Comprar">
+    <div class="closing-inner">
+      <svg class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:currentColor}.logo-mark .s{fill:none;stroke:currentColor;stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.40" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.70,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.70 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.30" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.70 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.10,0 110.50,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.50"/><path class="s" d="M142.10,6.7 V16.70 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/><circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="currentColor" stroke-width=".6"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></svg>
+      <p class="closing-tag">No necesitas perseguir la atención.<br>La atención llega a ti.</p>
+      <a class="cta-glow" href="#drop">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
+    </div>
+    <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>
+  </section>
+</main>
+
+<footer class="site-footer label muted">
+  <span>INBOUND STUDIO®. Own your style. Premium streetwear, est. 2025.</span>
+  <a href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">@inbound.st</a>
+</footer>
+
+<script>
+(() => {
+  const COLORS = [
+    { name: "Negro", hex: "#080808", dark: true },
+    { name: "Blanco", hex: "#FFFFFF", dark: false },
+    { name: "Gris", hex: "#858585", dark: true },
+    { name: "Beige", hex: "#D6D0C5", dark: false },
+  ];
+  const INK_LIGHT = "#FFFFFF", INK_DARK = "#080808";
+  const NS = "http://www.w3.org/2000/svg";
+  const form = document.getElementById("config-form");
+  const colorBox = document.getElementById("colors");
+
+  COLORS.forEach((c, i) => {
+    colorBox.insertAdjacentHTML("beforeend",
+      `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${c.name}" ${i === 0 ? "checked" : ""} aria-label="${c.name}"><span></span></label>`);
+  });
+
+  // Silhouette: oversize = longer body + dropped sleeves; boxy = wider and shorter.
+  function teePath(cut) {
+    const cx = 220, top = 30;
+    const hw = cut === "Boxy fit" ? 150 : 132, len = cut === "Boxy fit" ? 370 : 410, sl = cut === "Boxy fit" ? 70 : 82;
+    const p = [
+      [cx - 46, top], [cx - hw + 14, top + 22], [cx - hw - sl + 20, top + 120], [cx - hw - sl + 52, top + 168],
+      [cx - hw, top + 128], [cx - hw + 4, top + len], [cx + hw - 4, top + len], [cx + hw, top + 128],
+      [cx + hw + sl - 52, top + 168], [cx + hw + sl - 20, top + 120], [cx + hw - 14, top + 22], [cx + 46, top],
+    ];
+    return { d: "M" + p.map(q => q.join(",")).join(" L") + " Q" + cx + "," + (top + 34) + " " + p[0].join(",") + " Z", top, len, hw };
+  }
+
+  function el(tag, attrs, text) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function star(g, ink, x, y, r) {
+    const k = r * 0.16;
+    g.append(el("path", { d: `M${x},${y - r} Q${x + k},${y - k} ${x + r},${y} Q${x + k},${y + k} ${x},${y + r} Q${x - k},${y + k} ${x - r},${y} Q${x - k},${y - k} ${x},${y - r} Z`, fill: ink }));
+  }
+
+  function techniqueFor(s) {
+    const t = [];
+    if (s.grafico !== "Sin gráfico") t.push("Serigrafía para el gráfico");
+    if (s.frase) t.push("DTF para la frase");
+    t.push("marquilla en alta densidad");
+    return t.join(", ");
+  }
+
+  function state() {
+    const f = new FormData(form);
+    return {
+      corte: f.get("corte"), color: f.get("color"), gramaje: f.get("gramaje"),
+      grafico: f.get("grafico"), frase: (f.get("frase") || "").trim().toUpperCase(), talla: f.get("talla"),
+      view: document.querySelector('input[name="view"]:checked').value,
+    };
+  }
+
+  function render() {
+    const s = state();
+    const color = COLORS.find(c => c.name === s.color);
+    const ink = color.dark ? INK_LIGHT : INK_DARK;
+    const shape = teePath(s.corte);
+    const body = document.getElementById("tee-body");
+    body.setAttribute("d", shape.d);
+    body.setAttribute("fill", color.hex);
+    const neck = document.getElementById("tee-neck");
+    const nTop = shape.top, cx = 220;
+    neck.setAttribute("d", s.view === "frente"
+      ? `M${cx - 46},${nTop} Q${cx},${nTop + 34} ${cx + 46},${nTop}`
+      : `M${cx - 46},${nTop} Q${cx},${nTop + 12} ${cx + 46},${nTop}`);
+    neck.setAttribute("stroke", color.dark ? "rgba(255,255,255,.12)" : "rgba(0,0,0,.12)");
+
+    const g = document.getElementById("tee-print");
+    g.replaceChildren();
+    const font = { "font-family": "Archivo, Arial, sans-serif", "font-weight": 900, "font-stretch": "125%", "text-anchor": "middle", fill: ink };
+
+    if (s.view === "frente") {
+      if (s.frase) {
+        const size = Math.max(11, Math.min(22, 260 / s.frase.length));
+        g.append(el("text", { ...font, x: cx, y: nTop + 100, "font-size": size, "letter-spacing": "1" }, s.frase));
+      }
+      // marquilla de alta densidad
+      g.append(el("rect", { x: cx - shape.hw + 26, y: nTop + shape.len - 52, width: 46, height: 16, fill: ink }));
+      g.append(el("text", { ...font, fill: color.hex, x: cx - shape.hw + 49, y: nTop + shape.len - 40.5, "font-size": 8 }, "INBOUND"));
+    } else {
+      const midY = nTop + shape.len * 0.48;
+      g.append(el("text", { ...font, x: cx, y: nTop + 70, "font-size": 15, "letter-spacing": "4" }, "INBOUND"));
+      if (s.grafico === "Estrella") {
+        g.append(el("circle", { cx, cy: midY, r: 84, fill: "none", stroke: ink, "stroke-width": 1.5 }));
+        star(g, ink, cx, midY, 72);
+        star(g, ink, cx + 62, midY - 58, 12);
+      } else if (s.grafico === "Eclipse") {
+        g.append(el("circle", { cx, cy: midY, r: 80, fill: ink }));
+        g.append(el("circle", { cx: cx + 18, cy: midY - 10, r: 74, fill: color.hex }));
+        g.append(el("circle", { cx, cy: midY, r: 92, fill: "none", stroke: ink, "stroke-width": 1, "stroke-dasharray": "2 6" }));
+      } else if (s.grafico === "The future is yours") {
+        ["THE", "FUTURE", "IS YOURS"].forEach((w, i) =>
+          g.append(el("text", { ...font, x: cx, y: midY - 30 + i * 46, "font-size": 40 }, w)));
+      } else if (s.grafico === "Logo grande") {
+        g.append(el("text", { ...font, x: cx, y: midY + 22, "font-size": 64, textLength: 240, lengthAdjust: "spacingAndGlyphs" }, "INBOUND"));
+        g.append(el("text", { ...font, "font-weight": 500, "font-stretch": "100%", x: cx, y: midY + 52, "font-size": 11, "letter-spacing": "3" }, "ESTABLISHED 2025"));
+      }
+    }
+
+    document.getElementById("tee-desc").textContent =
+      `Camiseta ${s.corte.toLowerCase()} color ${s.color.toLowerCase()}, vista de ${s.view}.`;
+
+    const rows = [
+      ["Corte", s.corte], ["Color", s.color], ["Gramaje", s.gramaje], ["Gráfico", s.grafico],
+      ["Frase", s.frase || "Sin frase"], ["Talla", s.talla],
+      ["Tinta", `${color.dark ? "Blanco" : "Negro"}, para que contraste con la prenda`],
+      ["Técnica", techniqueFor(s)],
+    ];
+    document.getElementById("summary").replaceChildren(...rows.map(([k, v]) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b></b><span></span>";
+      li.children[0].textContent = k; li.children[1].textContent = v;
+      return li;
+    }));
+    return rows;
+  }
+
+  form.addEventListener("input", render);
+  document.querySelectorAll('input[name="view"]').forEach(i => i.addEventListener("change", render));
+
+  const status = document.getElementById("status");
+  document.getElementById("copy-order").addEventListener("click", async () => {
+    const text = "Hola INBOUND, quiero este diseño:\n" + render().map(([k, v]) => `${k}: ${v}`).join("\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      status.textContent = "Pedido copiado. Pégalo en el chat de Instagram para confirmarlo.";
+    } catch {
+      status.textContent = "No se pudo copiar automáticamente. Escríbenos por Instagram con los datos de Tu diseño.";
+    }
+  });
+
+  if (document.fonts) document.fonts.ready.then(render);
+  render();
+})();
+</script>
+</body>
+</html>

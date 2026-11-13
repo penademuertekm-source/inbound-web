@@ -1,0 +1,12 @@
+# Material del cliente: se queda en local, no se publica
+*.pdf
+
+# Archivos temporales de herramientas
+.playwright-mcp/
+_*.html
+_*.png
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

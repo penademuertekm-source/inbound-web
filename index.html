@@ -149,11 +149,13 @@ a{color:inherit}
 @media (min-width:860px){.next-drop{grid-template-columns:280px 1fr}}
 
 /* process */
-.steps{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(280px,320px);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 var(--s3);margin:0;list-style:none;scrollbar-width:none}
-.step{scroll-snap-align:start;display:grid;grid-template-rows:auto auto 1fr;gap:12px;align-content:start;border-top:1.5px solid currentColor;padding-top:var(--s2)}
-.step-num{font-stretch:125%;font-weight:900;font-size:clamp(56px,6vw,88px);line-height:.9;color:var(--gray)}
+/* tarjetas idénticas: imagen 4:5 arriba (todas alineadas), número como dato, título, una línea */
+.steps{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(260px,21vw,340px);gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 0 var(--s3);margin:0;list-style:none;scrollbar-width:none}
+.step{scroll-snap-align:start;display:grid;gap:12px;align-content:start}
+.step-media{position:relative;margin:0 0 4px}
+.step-media img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.step-num{position:absolute;left:10px;top:10px;padding:3px 8px;background:var(--ink);color:var(--white)} /* pastilla: legible sobre fondos claros */
 .step p{margin:0;max-width:30ch}
-.step img{width:100%;aspect-ratio:4/5;object-fit:cover;align-self:end;filter:grayscale(1)}
 .steps-nav{display:flex;align-items:center;gap:12px;margin-top:var(--s2)}
 .steps-nav .btn{width:48px;padding:0}
 
@@ -385,13 +387,14 @@ a{color:inherit}
       <p class="lede muted">De tu pantalla a tu puerta, en un solo taller.</p>
     </div>
     <ol class="steps" tabindex="0" aria-label="Pasos del proceso, desplázate horizontalmente">
-      <li class="step"><span class="step-num">01</span><h3 class="h3">Elige</h3><p>Corte boxy u oversize, color y gramaje según la caída que buscas.</p></li>
-      <li class="step"><span class="step-num">02</span><h3 class="h3">Diseña</h3><p>Combina gráficos de la marca, tu frase o tu imagen y mírala en 3D antes de pedirla.</p></li>
-      <li class="step"><span class="step-num">03</span><h3 class="h3">Validamos</h3><p>Revisamos que el diseño se pueda producir y que siga siendo INBOUND.</p></li>
-      <li class="step"><span class="step-num">04</span><h3 class="h3">Producimos</h3><p>Serigrafía, DTF o alta densidad: la técnica la decide tu diseño.</p></li>
-      <li class="step"><span class="step-num">05</span><h3 class="h3">Controlamos</h3><p>Estampado, medidas y acabados, prenda por prenda.</p><img src="assets/paso-controla.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">06</span><h3 class="h3">Empacamos</h3><p>Caja cerrada solo cuando todo está como lo pediste.</p><img src="assets/paso-empaca.png" alt="" loading="lazy"></li>
-      <li class="step"><span class="step-num">07</span><h3 class="h3">Entregamos</h3><p>A la puerta de tu casa.</p><img src="assets/paso-entrega.png" alt="" loading="lazy"></li>
+      <!-- Imágenes generadas con IA (Figma, provisionales): sustituir por fotos reales del taller -->
+      <li class="step"><figure class="step-media"><img src="assets/proceso/01-elige.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">01</span></figure><h3 class="h3">Elige</h3><p class="muted">Corte boxy u oversize, color y gramaje según la caída que buscas.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/02-disena.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">02</span></figure><h3 class="h3">Diseña</h3><p class="muted">Gráficos de la marca, tu frase o tu imagen. La ves en 3D antes de pedirla.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/03-validamos.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">03</span></figure><h3 class="h3">Validamos</h3><p class="muted">Revisamos que se pueda producir y que siga siendo INBOUND.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/04-producimos.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">04</span></figure><h3 class="h3">Producimos</h3><p class="muted">Serigrafía, DTF o alta densidad: la técnica la decide tu diseño.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/05-controlamos.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">05</span></figure><h3 class="h3">Controlamos</h3><p class="muted">Estampado, medidas y acabados, prenda por prenda.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/06-empacamos.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">06</span></figure><h3 class="h3">Empacamos</h3><p class="muted">La caja se cierra solo cuando todo está como lo pediste.</p></li>
+      <li class="step"><figure class="step-media"><img src="assets/proceso/07-entregamos.jpg" alt="" loading="lazy" width="960" height="1200"><span class="step-num data">07</span></figure><h3 class="h3">Entregamos</h3><p class="muted">A la puerta de tu casa.</p></li>
     </ol>
     <div class="steps-nav">
       <button class="btn btn-ghost" type="button" data-steps="-1" aria-label="Paso anterior">‹</button>

@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>INBOUND STUDIO® | Heavyweight Oversize Culture</title>
+<title>INBOUND STUDIO | Heavyweight Oversize Culture</title>
 <meta name="description" content="Camisetas boxy fit en algodón 310+ GSM. Diseña tu INBOUND o compra el Drop 001, stock limitado.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- fuentes sin bloquear el primer pintado (Lighthouse: -0.8 s en móvil); sin JS se cargan igual -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Montserrat:wght@300;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Montserrat:wght@300;500;600&display=swap"></noscript>
+<link rel="preload" href="assets/fuentes/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Fuentes servidas desde el propio sitio (SIL OFL 1.1): sin peticiones a Google */
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(assets/fuentes/archivo-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(assets/fuentes/archivo-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 300 600; font-display: swap; src: url(assets/fuentes/montserrat-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 300 600; font-display: swap; src: url(assets/fuentes/montserrat-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 :root{
   /* Paleta de "Identidad_visual_INBOUND.pdf" */
   --ink:#080808; --white:#FFFFFF; --gray:#858585; --beige:#D6D0C5;
@@ -330,17 +331,17 @@ a{color:inherit}
 
 <!-- Logo oficial (redibujado del PDF): se define una vez y se reutiliza -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="logo-inbound" viewBox="0 0 150.8 24">
-    <g fill="currentColor"><rect x="0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></g>
+  <symbol id="logo-inbound" viewBox="0 0 143.8 24">
+    <g fill="currentColor"><rect x="0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/></g>
     <g fill="none" stroke="currentColor" stroke-width="3.4"><path d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><path d="M129.5,1.7 H133.5"/><path d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/></g>
-    <circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="currentColor" stroke-width=".6"/>
+    
   </symbol>
   <!-- Marca de registro de serigrafía (Fase 2b): pathLength=1 para dibujarla con stroke-dashoffset -->
   <symbol id="reg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" pathLength="1"/><path d="M12 0V24M0 12H24" pathLength="1"/></symbol>
 </svg>
 
 <header class="site-header" id="site-header">
-  <a class="logo" href="#top" aria-label="INBOUND, inicio"><svg viewBox="0 0 150.8 24" aria-hidden="true"><use href="#logo-inbound"/></svg></a>
+  <a class="logo" href="#top" aria-label="INBOUND, inicio"><svg viewBox="0 0 143.8 24" aria-hidden="true"><use href="#logo-inbound"/></svg></a>
   <nav class="nav label" id="site-nav" aria-label="Secciones">
     <a href="#drop">Drop 001</a>
     <a href="#disena">Estudio</a>
@@ -605,7 +606,7 @@ a{color:inherit}
 
   <section class="closing" aria-label="Comprar">
     <div class="closing-inner">
-      <svg class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
+      <svg class="logo-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
       <p class="closing-tag"><span>No necesitas perseguir la atención.</span><span>La atención llega a ti.</span></p>
       <a class="cta-glow" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
     </div>
@@ -651,8 +652,8 @@ a{color:inherit}
       <p class="muted">Hecho en Colombia.</p>
     </div>
   </div>
-  <svg class="footer-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
-  <div class="footer-base data"><span>INBOUND STUDIO®</span><span>Est. 2025</span></div>
+  <svg class="footer-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
+  <div class="footer-base data"><span>INBOUND STUDIO</span><span>Est. 2025</span></div>
 </footer>
 
 <script>

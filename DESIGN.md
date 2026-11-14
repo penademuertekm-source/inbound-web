@@ -1,4 +1,4 @@
-# INBOUND STUDIO® — Design Language
+# INBOUND STUDIO — Design Language
 
 Fuentes: "Identidad_visual_INBOUND.pdf" (guía oficial: paleta, botones, fondos) + "Black and White Modern Fashion
 Brand Strategy Presentation.pdf" (10 páginas: contenido, fotos, proceso) + bio de Instagram @inbound.st
@@ -36,7 +36,7 @@ seleccionado = fondo `ink`, texto `white`; foco = contorno 2px `ink` sobre claro
 Botones: negros con texto blanco; sobre fondo negro se usa la versión invertida (blanco con texto negro).
 
 ## Typography
-**Familia única:** Archivo (Google Fonts, variable `wdth 62–125`, `wght 100–900`) — fallback `"Arial Narrow", Arial, sans-serif`.
+**Familia única:** Archivo (servida desde `assets/fuentes/`, variable `wdth 62–125`, `wght 100–900`) — fallback `"Arial Narrow", Arial, sans-serif`.
 
 | Rol | Ajuste | Uso |
 |-----|--------|-----|
@@ -51,7 +51,7 @@ Idioma: lemas y titulares de marca en inglés (Heavyweight Oversize Culture, Own
 Composición: ninguna sección repite la anterior (a sangre/partida, lista tipográfica + foto, grid de producto, herramienta, carrusel, lista de razones). Logo: un solo símbolo SVG (`#logo-inbound`) en header, cierre y footer.
 | Cuerpo | `wdth 100`, `wght 400`, lh 1.55, medida ≤ 62ch | Párrafos |
 
-**Cierre (réplica de la pág. 10 del PDF):** Montserrat 500/600 (Google Fonts) para lema, botón "Compra ahora" y
+**Cierre (réplica de la pág. 10 del PDF):** Montserrat 500/600 (servida desde `assets/fuentes/`) para lema, botón "Compra ahora" y
 pie, en mayúsculas con tracking amplio (.12em botón, .36em lema). Logo: `assets/logo-inbound.svg`, wordmark
 redibujado del PDF (no hay archivo vectorial oficial). Fuentes embebidas en el PDF de estrategia: Monument Extended
 Bold (titulares pág. 7–9), Oswald Bold, Quicksand, Glacial Indifference, DM Sans, Prompt, Open Sauce One.

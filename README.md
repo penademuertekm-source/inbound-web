@@ -1,4 +1,4 @@
-# INBOUND STUDIO® — web
+# INBOUND STUDIO — web
 
 Web de INBOUND, marca de streetwear *heavyweight oversize* (boxy fit, algodón 310+ GSM).
 Página estática en un solo `index.html`, sin dependencias ni paso de compilación.
@@ -25,7 +25,7 @@ prototipo-3d/       Prototipo del diseñador 3D (ver abajo)
 ## Prototipo 3D (`prototipo-3d/`)
 
 Demostración funcional de la idea de la marca: el cliente coloca gráficos de INBOUND, su frase o su
-propia imagen sobre una camiseta en 3D, en móvil y en PC. Se abre con doble clic en `prototipo-3d/index.html`.
+propia imagen sobre una camiseta en 3D, en móvil y en PC. Necesita servirse por HTTP (ver abajo): con doble clic (`file://`) el navegador bloquea los módulos locales de three.js.
 
 - **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
 - **Diseño:** gráficos de la marca, colección INBOUND para DTF (6 diseños del cliente en `disenos-cliente.js`), frase propia e imagen subida; se arrastran sobre la tela y se escalan con las esquinas azules o el control de tamaño, con rotación.
@@ -34,13 +34,13 @@ propia imagen sobre una camiseta en 3D, en móvil y en PC. Se abre con doble cli
 - **Herramientas (como la app de referencia):** deshacer / rehacer (también Ctrl+Z / Ctrl+Y), voltear el gráfico, girar la prenda 360° y compartir la imagen desde el móvil.
 - **Exportar:** descarga una imagen PNG del diseño.
 
-Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT) desde CDN, sin compilación.
+Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT), copia local en `prototipo-3d/vendor/three/` (sin CDN ni compilación). Licencias en `LICENSES.md`.
 
 **Modelo 3D:** [«T Shirt»](https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba) de funlab117,
 licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (permite uso comercial citando al autor).
 Se adaptó con `herramientas/preparar_camiseta_sketchfab.py` (Blender 5): sin capas interiores, enderezado,
-centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. `camiseta-glb.js` es el mismo modelo empaquetado para abrir
-la página sin servidor. El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
+centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. `camiseta-glb.js` es el mismo modelo empaquetado
+para cargarlo sin una petición aparte. El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
 
 **Limitaciones del prototipo:** el modelo es de corte regular, no oversize; para la versión comercial conviene
 comprar o encargar un modelo con los patrones de INBOUND (CLO3D / Marvelous Designer). Sin paso de IA ni pedido online.
@@ -57,7 +57,7 @@ comprar o encargar un modelo con los patrones de INBOUND (CLO3D / Marvelous Desi
 
 ## Tipografías
 
-- [Archivo](https://fonts.google.com/specimen/Archivo) y [Montserrat](https://fonts.google.com/specimen/Montserrat), cargadas desde Google Fonts (licencia SIL OFL).
+- [Archivo](https://fonts.google.com/specimen/Archivo) y [Montserrat](https://fonts.google.com/specimen/Montserrat), servidas desde `assets/fuentes/` (licencia SIL OFL; sin peticiones a Google).
 
 ## Pendiente
 

@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Diseña en 3D | INBOUND STUDIO® (prototipo)</title>
+<title>Diseña en 3D | INBOUND STUDIO (prototipo)</title>
 <meta name="description" content="Prototipo: coloca gráficos y frases sobre una camiseta INBOUND en 3D.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="preload" href="../assets/fuentes/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Fuentes servidas desde el propio sitio (SIL OFL 1.1): sin peticiones a Google */
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(../assets/fuentes/archivo-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(../assets/fuentes/archivo-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 :root{
   --ink:#080808; --white:#FFFFFF; --gray:#858585; --beige:#D6D0C5;
   --gray-text:#6E6E6E; --tint:#EEEBE6; --line:rgba(0,0,0,.16);
@@ -111,7 +112,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 </head>
 <body>
 <header class="top">
-  <a class="logo" href="../index.html" aria-label="INBOUND, volver al inicio">INBOUND®</a>
+  <a class="logo" href="../index.html" aria-label="INBOUND, volver al inicio">INBOUND</a>
   <span class="badge">Prototipo 3D</span>
   <a class="back label" href="../index.html#disena">Volver a la web</a>
 </header>
@@ -170,6 +171,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <div style="margin-top:16px">
         <span class="btn file-label">Subir tu imagen<input type="file" id="upload" accept="image/png,image/jpeg,image/webp,image/svg+xml" aria-label="Subir tu imagen (PNG, JPG, WEBP o SVG)"></span>
         <p class="hint">PNG con fondo transparente para mejores resultados. Máximo 15 MB.</p>
+        <p class="hint">Sube solo imágenes que tengas derecho a usar. No estampamos marcas, personajes ni fotos de otras personas sin permiso: si un diseño infringe derechos de terceros, podemos rechazarlo.</p>
         <p class="error" id="upload-error" role="alert" hidden></p>
       </div>
     </div>
@@ -214,7 +216,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 <script src="graficos-marca.js"></script>
 <script src="disenos-cliente.js"></script>
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}
+{"imports":{"three":"./vendor/three/build/three.module.min.js","three/addons/":"./vendor/three/examples/jsm/"}}
 </script>
 <script type="module">
 import * as THREE from 'three';
@@ -234,7 +236,7 @@ const COLORS = [
 const PRINT = { Frente: { x: 0.16, yMin: -0.64, yMax: -0.1 }, Espalda: { x: 0.16, yMin: -0.66, yMax: -0.06 } };
 const MIN_DPI = 150;
 const CUTS = { 'Oversize': [1, 1, 1], 'Boxy fit': [1.08, 0.93, 1.04] };
-const LOGO_SVG = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:${fill}}.logo-mark .s{fill:none;stroke:${fill};stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.5"/><path class="s" d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/><circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="${fill}" stroke-width=".6"/><text x="147.4" y="3.7" font-size="3" font-family="Arial" font-weight="700" text-anchor="middle">R</text></svg>`;
+const LOGO_SVG = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" class="logo-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:${fill}}.logo-mark .s{fill:none;stroke:${fill};stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.5"/><path class="s" d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/></svg>`;
 
 // ---------- Funciones puras (validación) ----------
 function extents(wM, hM, deg) {
@@ -367,7 +369,7 @@ const GRAPHICS = {
     ctx.fillStyle = ink; ctx.textAlign = 'center';
     ['THE', 'FUTURE', 'IS YOURS'].forEach((t, i) => fitText(ctx, t, w / 2, (220 + i * 240) * s, w * 0.96, 200 * s));
   } },
-  logo: { name: 'Logo INBOUND', w: 1508, h: 240, cm: 9, async draw(ctx, w, h, ink) { ctx.drawImage(await logoImage(ink), 0, 0, w, h); } },
+  logo: { name: 'Logo INBOUND', w: 1438, h: 240, cm: 9, async draw(ctx, w, h, ink) { ctx.drawImage(await logoImage(ink), 0, 0, w, h); } },
   // Diseños de marca (raster sobre negro): el negro se vuelve transparente; cm por defecto = ~150 ppp
   destello: brandArt('Destello', 'destello', 1536, 1024, 24),
   siluetas: brandArt('Siluetas', 'siluetas', 1151, 1367, 19),

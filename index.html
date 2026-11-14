@@ -231,6 +231,20 @@ a{color:inherit}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s2);color:var(--gray)}
 @media (min-width:860px){.footer-cols{grid-template-columns:2fr 1fr 1fr}}
 
+/* ---------- Motion (ver DESIGN.md › Motion): todo ligado al scroll; sin soporte o con menos movimiento se ve quieto ---------- */
+.site-header{transition:translate .2s cubic-bezier(.4,0,.2,1)}
+.site-header.hide{translate:0 -100%}
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    /* parallax del hero en 2 capas: el arte baja más lento que la página; el texto sube un poco */
+    .hero-art{animation:par-art linear both;animation-timeline:scroll(root);animation-range:0 100svh}
+    .hero-copy{animation:par-copy linear both;animation-timeline:scroll(root);animation-range:0 100svh}
+    .lite .hero-copy{animation:none}
+  }
+}
+@keyframes par-art{to{translate:0 16svh}}
+@keyframes par-copy{to{translate:0 -6svh}}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{transition:none!important}
@@ -693,6 +707,20 @@ a{color:inherit}
   menuBtn.addEventListener("click", () => setMenu(!header.classList.contains("open")));
   header.querySelectorAll(".nav a").forEach(a => a.addEventListener("click", () => setMenu(false)));
   document.addEventListener("keydown", e => { if (e.key === "Escape" && header.classList.contains("open")) { setMenu(false); menuBtn.focus(); } });
+
+  // Header: se oculta al bajar y vuelve al subir (único listener de scroll de la página)
+  let lastY = scrollY;
+  addEventListener("scroll", () => {
+    const y = scrollY;
+    if (Math.abs(y - lastY) < 8) return;
+    const hide = y > lastY && y > 160 && !header.classList.contains("open") && !header.contains(document.activeElement);
+    header.classList.toggle("hide", hide);
+    lastY = y;
+  }, { passive: true });
+  header.addEventListener("focusin", () => header.classList.remove("hide"));
+
+  // Perfil ligero: una sola capa de parallax en equipos modestos o con ahorro de datos
+  if (navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || navigator.connection?.saveData) document.documentElement.classList.add("lite");
 
   // Proceso: flechas y posición (01 / 07)
   const steps = document.querySelector(".steps"), stepPos = document.getElementById("steps-pos");

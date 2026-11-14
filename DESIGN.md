@@ -82,6 +82,24 @@ Escala modular 1.333 (expresiva), base 16px:
 | Índice de líneas | Patrón | "Tu estilo, nuestra esencia": foto 4:5 fija a la izquierda que cambia con una pasada de racleta (clip-path ligado al scroll) al llegar a cada línea; filas con número, nombre, descriptores (Dato) y swatches | Escritorio ≥1024 con soporte de `timeline-scope`; sin soporte, en tableta o con reduced-motion, la foto va junto a cada fila |
 | Configurador | Patrón | Diseña tu INBOUND: vista previa SVG + controles + validación + resumen | — |
 
+## Motion
+**Motion de taller:** el movimiento imita gestos de producción, no repertorio de plantilla.
+
+| Gesto | Qué hace | Dónde |
+|-------|----------|-------|
+| Racleta | Revela de izquierda a derecha con `clip-path: inset()`, como una pasada de serigrafía | Titulares de sección, tríada del manifiesto, lema del cierre por líneas, foto del índice de líneas |
+| Registro | Marcas de registro SVG que se dibujan (`stroke-dashoffset`) al entrar | Fichas del Drop, fotos de técnica |
+| Peso | Cae unos px y asienta, sin rebote | Fichas del Drop, tarjetas del proceso |
+| Parallax | 2 capas en el hero: el arte baja más lento que el scroll, el texto sube un poco | Hero |
+| Header | Se oculta al bajar y vuelve al subir; nunca con el menú abierto o con foco dentro | Global |
+
+Reglas:
+- CSS ligado al scroll (`animation-timeline: scroll()/view()`) dentro de `@supports` y `@media (prefers-reduced-motion: no-preference)`; fuera de eso se ve el estado final, quieto.
+- Solo `transform/translate`, `opacity` y `clip-path` (más `stroke-dashoffset` en las marcas pequeñas). Nada de blur, sombras ni `font-stretch` animados.
+- Un solo listener de scroll (el header). Sin scroll suave, sin scroll horizontal fijado, sin preloader.
+- Tokens: entrada `.5s cubic-bezier(.16,1,.3,1)`; UI `.2s cubic-bezier(.4,0,.2,1)`.
+- Perfil `.lite` (≤4 GB de memoria, ≤4 núcleos o ahorro de datos): una sola capa de parallax.
+
 ## Layout
 **Grid:** fluido de 12 columnas, márgenes `clamp(16px, 4vw, 56px)`, gutter 24px.
 **Base:** 8px. Escala: xs 4 · sm 8 · md 16 · lg 24 · xl 32 · 2xl 48 · 3xl 64 · 4xl 96 · 5xl 144.
@@ -103,7 +121,7 @@ Plano. Sin sombras. La jerarquía se construye con contraste negro/hueso, tamañ
 - No añadir colores saturados ni degradados decorativos.
 - No usar sombras ni tarjetas redondeadas idénticas.
 - No usar etiquetas en mayúsculas espaciadas encima de cada título.
-- No animar cada sección: el movimiento solo donde explica algo (hoy, el cambio de foto del índice de líneas). La Fase 2 añadirá aquí la sección Motion completa.
+- No animar todo: solo los gestos de la sección Motion, siempre ligados al scroll y con estado final quieto si no hay soporte o se pide menos movimiento.
 - No inventar precios: el pedido se cierra por Instagram hasta que exista checkout.
 
 ## Responsive
@@ -116,5 +134,5 @@ Proceso: fila con scroll-snap horizontal en todos los anchos.
 - Paleta cerrada de la guía: ink #080808, white #FFFFFF, gray #858585, beige #D6D0C5 (+ derivados gray-text y tint).
 - Lema de marca: "Own your style".
 - Base 8px; radio solo 0 o píldora.
-- Un único movimiento automático (hero); respetar `prefers-reduced-motion`.
+- Motion de taller (racleta, registro, peso) ligado al scroll; respetar `prefers-reduced-motion`.
 - Contenido real del PDF; todo lo inventado se marca como provisional.

@@ -39,7 +39,7 @@ Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT) desde CDN, sin compil
 **Modelo 3D:** [«T Shirt»](https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba) de funlab117,
 licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (permite uso comercial citando al autor).
 Se adaptó con `herramientas/preparar_camiseta_sketchfab.py` (Blender 5): sin capas interiores, enderezado,
-centrado y reducido de ~240 mil a ~59 mil caras. `camiseta-glb.js` es el mismo modelo empaquetado para abrir
+centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. `camiseta-glb.js` es el mismo modelo empaquetado para abrir
 la página sin servidor. El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
 
 **Limitaciones del prototipo:** el modelo es de corte regular, no oversize; para la versión comercial conviene

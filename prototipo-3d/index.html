@@ -267,7 +267,7 @@ try {
   loading.innerHTML = '<p>Tu navegador no tiene WebGL activado, así que no puede mostrar la camiseta en 3D. Prueba con Chrome, Edge o Safari actualizados.</p>';
   throw err;
 }
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2)); // móvil: 1.5 basta y ahorra GPU/batería
 renderer.toneMapping = THREE.NeutralToneMapping; // respeta el color real de la prenda (pensado para e-commerce)
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#EEEBE6');
@@ -288,6 +288,10 @@ const state = { color: COLORS[0], cut: 'Oversize', view: 'front' };
 const layers = [];
 let selected = null, uid = 0;
 
+// Render bajo demanda: solo se dibuja cuando algo cambió (cámara, capas, color, tamaño)
+let dirty = true;
+const invalidate = () => { dirty = true; };
+
 function fitDistance() {
   const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   return Math.max(0.45 / t, 0.5 / (t * camera.aspect)) * 1.05;
@@ -295,7 +299,7 @@ function fitDistance() {
 function resize() {
   const { clientWidth: w, clientHeight: h } = stage;
   renderer.setSize(w, h, false);
-  camera.aspect = w / h; camera.updateProjectionMatrix();
+  camera.aspect = w / h; camera.updateProjectionMatrix(); invalidate();
   controls.minDistance = fitDistance() * 0.45; controls.maxDistance = fitDistance() * 1.6;
 }
 new ResizeObserver(resize).observe(stage);
@@ -316,6 +320,7 @@ document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click'
 
 renderer.setAnimationLoop((now) => {
   if (tween) {
+    dirty = true;
     const k = Math.min(1, (now - tween.t0) / tween.dur), e = 1 - (1 - k) ** 3;
     // interpolación por el lateral para no atravesar la prenda
     const p = tween.from.clone().lerp(tween.to, e);
@@ -324,7 +329,9 @@ renderer.setAnimationLoop((now) => {
     controls.target.copy(TARGET);
     if (k === 1) tween = null;
   }
-  controls.update();
+  if (controls.update()) dirty = true;   // true mientras la cámara se mueve (incluida la inercia y el giro automático)
+  if (!dirty) return;
+  dirty = false;
   renderer.render(scene, camera);
 });
 
@@ -415,7 +422,7 @@ async function paint(layer) {
   const { ctx, canvas: c } = layer;
   ctx.clearRect(0, 0, c.width, c.height);
   await layer.draw(ctx, c.width, c.height, ink());
-  layer.texture.needsUpdate = true;
+  layer.texture.needsUpdate = true; invalidate();
 }
 function makeCanvas(w, h) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -468,6 +475,7 @@ function rebuild(layer) {
   if (layer.mesh) { layer.mesh.geometry.dispose(); layer.mesh.geometry = geo; }
   else { layer.mesh = new THREE.Mesh(geo, layer.material); layer.mesh.renderOrder = ++order; scene.add(layer.mesh); }
   if (layer === selected) drawFrame(pos, n, w, h);
+  invalidate();
 }
 let pending = new Set();
 function queueRebuild(layer) {
@@ -532,12 +540,12 @@ function restore(s) {
     if (!x.l.mesh.parent) scene.add(x.l.mesh);
     rebuild(x.l);
   }
-  current = s;
+  current = s; invalidate();
   select(layers.includes(selected) ? selected : null);
 }
 function undo() { if (past.length) { future.push(current); restore(past.pop()); } }
 function redo() { if (future.length) { past.push(current); restore(future.pop()); } }
-function applyFlip(l) { l.texture.repeat.x = l.flip ? -1 : 1; }
+function applyFlip(l) { l.texture.repeat.x = l.flip ? -1 : 1; invalidate(); }
 const SPOTS = [[0, -0.28], [0, -0.16], [0, -0.44], [0.08, -0.17], [-0.08, -0.17]];
 
 // ---------- Interacción en el lienzo ----------
@@ -593,12 +601,12 @@ COLORS.forEach((c, i) => colorBox.insertAdjacentHTML('beforeend',
   `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${i}" ${i === 0 ? 'checked' : ''} aria-label="${c.name}"><span></span></label>`));
 colorBox.addEventListener('change', async (e) => {
   state.color = COLORS[+e.target.value];
-  fabric.color.set(state.color.hex);
+  fabric.color.set(state.color.hex); invalidate();
   for (const l of layers) if (!l.fixedInk) await paint(l);
   refreshChecks();
 });
 document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('change', () => {
-  state.cut = i.value; shirt.scale.set(...CUTS[i.value]); layers.forEach(rebuild); refreshChecks();
+  state.cut = i.value; shirt.scale.set(...CUTS[i.value]); layers.forEach(rebuild); invalidate(); refreshChecks();
 }));
 
 for (const [id, g] of Object.entries(GRAPHICS)) {
@@ -645,7 +653,7 @@ $('upload').addEventListener('change', (e) => {
 
 function select(layer) {
   selected = layer;
-  if (!layer) frame.visible = false; else rebuild(layer);
+  if (!layer) { frame.visible = false; invalidate(); } else rebuild(layer);
   refreshUI();
 }
 const size = $('size'), rot = $('rot');
@@ -762,11 +770,11 @@ document.fonts.load('900 100px Archivo').catch(() => {}).finally(() => {
     // solo Frente y Espalda reciben diseños; Mangas y Cuello son visuales
     g.scene.traverse(o => { if (o.isMesh) { o.material = fabric; if (PRINT[o.name]) panels.push(o); } });
     console.assert(panels.length === 2, 'el modelo debe tener las piezas Frente y Espalda');
-    shirt.add(g.scene);
+    shirt.add(g.scene); invalidate();
     shirt.updateMatrixWorld(true);
     loading.hidden = true;
     refreshUI();
-    window.__inbound = { layers, panels, addLayer, GRAPHICS, select, undo, redo, controls }; // para pruebas
+    window.__inbound = { layers, panels, addLayer, GRAPHICS, select, undo, redo, controls, renderer }; // para pruebas
   }, undefined, () => {
     loading.innerHTML = '<p>No se pudo cargar el modelo 3D. Comprueba que el archivo camiseta-glb.js está junto a esta página.</p>';
   });

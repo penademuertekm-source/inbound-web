@@ -5,7 +5,7 @@ https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba
 
 Uso (desde prototipo-3d):
   "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe" --background --factory-startup \
-      --python herramientas/preparar_camiseta_sketchfab.py -- <ruta>/t_shirt.glb camiseta.glb
+      --python herramientas/preparar_camiseta_sketchfab.py -- <ruta>/t_shirt.glb camiseta.glb [proporción]
 
 Pasos: quita las capas interiores de tela, endereza la prenda (frente hacia +Z en el GLB),
 la centra con el punto más alto del cuello en y=0, reduce polígonos y exporta las piezas
@@ -14,8 +14,9 @@ Frente / Espalda (reciben diseños) y Mangas / Cuello (solo visuales).
 import bpy, bmesh, math, sys
 from mathutils import Vector, Matrix
 
-SRC, OUT = sys.argv[sys.argv.index("--") + 1:][:2]
-RATIO = 0.42          # proporción de caras que se conservan al reducir
+ARGS = sys.argv[sys.argv.index("--") + 1:]
+SRC, OUT = ARGS[:2]
+RATIO = float(ARGS[2]) if len(ARGS) > 2 else 0.14   # proporción de caras que se conservan (0.14 ≈ 20k triángulos, Fase 3a)
 
 for o in list(bpy.data.objects):
     bpy.data.objects.remove(o, do_unlink=True)

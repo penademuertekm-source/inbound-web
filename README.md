@@ -28,7 +28,8 @@ Demostración funcional de la idea de la marca: el cliente coloca gráficos de I
 propia imagen sobre una camiseta en 3D, en móvil y en PC. Se abre con doble clic en `prototipo-3d/index.html`.
 
 - **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
-- **Diseño:** gráficos de la marca, frase propia e imagen subida; se arrastran sobre la tela, con tamaño y rotación.
+- **Diseño:** gráficos de la marca, colección INBOUND para DTF (6 diseños del cliente en `disenos-cliente.js`), frase propia e imagen subida; se arrastran sobre la tela y se escalan con las esquinas azules o el control de tamaño, con rotación.
+- **Área imprimible:** el gráfico se proyecta de frente (como la placa de la prensa) y no puede salir del área de impresión; si no cabe, se reduce. Así no se corta en la costura de la manga.
 - **Validación:** área imprimible, resolución de imágenes (150 ppp mínimo), contraste con la prenda y técnica (serigrafía, DTF o alta densidad).
 - **Herramientas (como la app de referencia):** deshacer / rehacer (también Ctrl+Z / Ctrl+Y), voltear el gráfico, girar la prenda 360° y compartir la imagen desde el móvil.
 - **Exportar:** descarga una imagen PNG del diseño.

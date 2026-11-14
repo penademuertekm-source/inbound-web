@@ -158,6 +158,8 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="block">
       <h2>2. Añade al diseño</h2>
       <div class="graphics" id="graphics"></div>
+      <p class="label" style="margin:16px 0 8px">Colección INBOUND (DTF)</p>
+      <div class="graphics" id="coleccion"></div>
       <div style="margin-top:16px">
         <label class="label" for="frase">Tu frase</label>
         <div class="row" style="margin-top:8px">
@@ -210,6 +212,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
 <script src="camiseta-glb.js"></script>
 <script src="graficos-marca.js"></script>
+<script src="disenos-cliente.js"></script>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}
 </script>
@@ -362,7 +365,28 @@ const GRAPHICS = {
   destello: brandArt('Destello', 'destello', 1536, 1024, 24),
   siluetas: brandArt('Siluetas', 'siluetas', 1151, 1367, 19),
   calor: brandArt('Calor', 'calor', 708, 741, 12),
+  // Colección del cliente (PDF para DTF, ya con transparencia). srcPx = ancho del archivo de impresión; cm = tamaño del PDF
+  eyes: clientArt('Eyes Vision', 'eyes', 2048, 1750, 2144, 9),
+  hd: clientArt('Etiqueta HD', 'hd', 2048, 1057, 2489, 21.5),
+  rosario: clientArt('Cruz rosario', 'rosario', 1337, 2048, 1344, 11.5),
+  blancoRojo: clientArt('Blanco y rojo', 'blancoRojo', 1821, 2048, 1878, 18),
+  ornamental: clientArt('Ornamental', 'ornamental', 1230, 1890, 1230, 10.5),
+  valledupar: clientArt('Made Different', 'valledupar', 1854, 2048, 2294, 30),
 };
+function clientArt(name, key, w, h, srcPx, cm) {
+  return { name, w, h, cm, srcPx, kind: 'imagen', fixedInk: true, dark: true, client: true, async draw(ctx, cw, ch) {
+    const img = new Image(); img.src = window.DISENOS_CLIENTE[key]; await img.decode();
+    ctx.drawImage(img, 0, 0, cw, ch);
+  } };
+}
+// luminancia media de los píxeles visibles, para el aviso de contraste
+function meanLum(src, w, h) {
+  const probe = makeCanvas(64, Math.max(1, Math.round(64 * h / w))); probe.ctx.drawImage(src, 0, 0, probe.canvas.width, probe.canvas.height);
+  const d = probe.ctx.getImageData(0, 0, probe.canvas.width, probe.canvas.height).data;
+  let sum = 0, n = 0;
+  for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { const hex = '#' + [d[i], d[i + 1], d[i + 2]].map(v => v.toString(16).padStart(2, '0')).join(''); sum += lum(hex); n++; }
+  return n ? sum / n : null;
+}
 function brandArt(name, key, w, h, cm) {
   return { name, w, h, cm, kind: 'imagen', srcPx: w, fixedInk: true, dark: true, async draw(ctx, cw, ch) {
     const img = new Image(); img.src = window.GRAFICOS_MARCA[key]; await img.decode();
@@ -419,7 +443,18 @@ function defaultHit(panelName, x = 0, y = -0.3) {
 function setPose(layer, hit) {
   layer.panel = hit.object;
   layer.localPos = hit.object.worldToLocal(hit.point.clone());
-  layer.localNormal = hit.face.normal.clone();
+  // proyección plana de frente/espalda, como la placa de una prensa: con la normal local de la tela el diseño se inclinaba y cortaba en el costado
+  layer.localNormal = new THREE.Vector3(0, 0, hit.object.name === 'Frente' ? 1 : -1);
+}
+// Mantiene el diseño dentro del área imprimible: fuera de ella el decal llegaba a la costura de la manga y se cortaba
+function fit(layer) {
+  const p = PRINT[layer.panel.name];
+  let e = extents(layer.cm / 100, layer.cm / 100 / layer.aspect, layer.rot);
+  const k = Math.min(1, p.x / e.x, (p.yMax - p.yMin) / 2 / e.y);
+  if (k < 1) { layer.cm = Math.floor(layer.cm * k * 2) / 2; e = extents(layer.cm / 100, layer.cm / 100 / layer.aspect, layer.rot); }
+  const x = THREE.MathUtils.clamp(layer.localPos.x, -p.x + e.x, p.x - e.x);
+  const y = THREE.MathUtils.clamp(layer.localPos.y, p.yMin + e.y, p.yMax - e.y);
+  if (x !== layer.localPos.x || y !== layer.localPos.y) { const hit = defaultHit(layer.panel.name, x, y); if (hit) setPose(layer, hit); }
 }
 function rebuild(layer) {
   const { panel } = layer;
@@ -428,7 +463,8 @@ function rebuild(layer) {
   const n = layer.localNormal.clone().transformDirection(panel.matrixWorld);
   helper.position.copy(pos); helper.lookAt(pos.clone().add(n)); helper.rotateZ(THREE.MathUtils.degToRad(-layer.rot));
   const w = layer.cm / 100, h = w / layer.aspect;
-  const geo = new DecalGeometry(panel, pos, helper.rotation, new THREE.Vector3(w, h, 0.2));
+  // profundidad 0.5 m: con 0.2 la caja no alcanzaba la tela que se curva hacia el costado y el borde se cortaba
+  const geo = new DecalGeometry(panel, pos, helper.rotation, new THREE.Vector3(w, h, 0.5));
   if (layer.mesh) { layer.mesh.geometry.dispose(); layer.mesh.geometry = geo; }
   else { layer.mesh = new THREE.Mesh(geo, layer.material); layer.mesh.renderOrder = ++order; scene.add(layer.mesh); }
   if (layer === selected) drawFrame(pos, n, w, h);
@@ -443,9 +479,19 @@ function queueRebuild(layer) {
 // Marco de selección (como en el reel de referencia)
 const frame = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x2F6BFF, depthTest: false }));
 frame.renderOrder = 9999; frame.visible = false; scene.add(frame);
+// Asas de esquina para escalar: zona de toque grande e invisible con un cuadrado azul visible dentro
+const handleMat = new THREE.MeshBasicMaterial({ color: 0x2F6BFF, depthTest: false });
+const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthTest: false, depthWrite: false });
+const handles = [0, 1, 2, 3].map(() => {
+  const hit = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.07), hitMat);   // ~40 px en móvil
+  const dot = new THREE.Mesh(new THREE.PlaneGeometry(0.018, 0.018), handleMat);
+  hit.renderOrder = dot.renderOrder = 10000; hit.add(dot); frame.add(hit);
+  return hit;
+});
 function drawFrame(pos, n, w, h) {
   const pts = [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].map(([x, y]) => new THREE.Vector3(x, y, 0));
   frame.geometry.setFromPoints(pts);
+  pts.forEach((p, i) => handles[i].position.copy(p));
   frame.position.copy(pos).addScaledVector(n, 0.01); frame.quaternion.copy(helper.quaternion); frame.visible = true;
 }
 
@@ -462,6 +508,7 @@ async function addLayer(spec) {
   const used = layers.filter(l => l.panel.name === side).map(l => l.localPos);
   const spot = SPOTS.find(([x, y]) => used.every(p => Math.hypot(p.x - x, p.y - y) > 0.09)) || SPOTS[0];
   setPose(layer, defaultHit(side, spot[0], spot[1]) || defaultHit(side, 0, -0.3));
+  fit(layer);
   layers.push(layer);
   select(layer);
   rebuild(layer);
@@ -494,9 +541,20 @@ function applyFlip(l) { l.texture.repeat.x = l.flip ? -1 : 1; }
 const SPOTS = [[0, -0.28], [0, -0.16], [0, -0.44], [0.08, -0.17], [-0.08, -0.17]];
 
 // ---------- Interacción en el lienzo ----------
-let dragging = null, downAt = null;
+let dragging = null, resizing = null, downAt = null;
+const plane = new THREE.Plane(), pt = new THREE.Vector3();
 canvas.addEventListener('pointerdown', (e) => {
   downAt = { x: e.clientX, y: e.clientY };
+  // escalar: arrastrar una esquina; el tamaño sigue la distancia al centro sobre el plano del gráfico
+  if (selected && frame.visible && hitFromEvent(e, handles)) {
+    plane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1).applyQuaternion(frame.quaternion), frame.position);
+    if (ray.ray.intersectPlane(plane, pt)) {
+      // centro fijo al empezar: si fit() recoloca el gráfico, la escala no se dispara
+      resizing = { layer: selected, c0: frame.position.clone(), d0: Math.max(1e-4, pt.distanceTo(frame.position)), cm0: selected.cm };
+      controls.enabled = false; canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+  }
   const hit = hitFromEvent(e, layers.map(l => l.mesh).filter(Boolean));
   if (!hit) return;                           // fuera de un gráfico: OrbitControls gira la prenda
   const layer = layers.find(l => l.mesh === hit.object);
@@ -504,12 +562,24 @@ canvas.addEventListener('pointerdown', (e) => {
   canvas.classList.add('dragging'); canvas.setPointerCapture(e.pointerId);
 }, { capture: true });
 canvas.addEventListener('pointermove', (e) => {
-  if (!dragging) return;
+  if (resizing) {
+    hitFromEvent(e, []);
+    if (ray.ray.intersectPlane(plane, pt)) {
+      const l = resizing.layer;
+      l.cm = THREE.MathUtils.clamp(Math.round(resizing.cm0 * pt.distanceTo(resizing.c0) / resizing.d0 * 2) / 2, +size.min, +size.max);
+      fit(l); syncSize(); queueRebuild(l); refreshChecks();
+    }
+    return;
+  }
+  if (!dragging) {
+    if (e.pointerType === 'mouse') canvas.style.cursor = selected && frame.visible && hitFromEvent(e, handles) ? 'nwse-resize' : '';
+    return;
+  }
   const hit = hitFromEvent(e, panels);
-  if (hit) { setPose(dragging, hit); queueRebuild(dragging); }
+  if (hit) { setPose(dragging, hit); fit(dragging); queueRebuild(dragging); }
 });
 function endDrag(e) {
-  if (dragging) { dragging = null; controls.enabled = true; canvas.classList.remove('dragging'); commit(); }
+  if (dragging || resizing) { dragging = resizing = null; controls.enabled = true; canvas.classList.remove('dragging'); commit(); }
   else if (downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 4) select(null);
   downAt = null;
 }
@@ -531,15 +601,17 @@ document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('
   state.cut = i.value; shirt.scale.set(...CUTS[i.value]); layers.forEach(rebuild); refreshChecks();
 }));
 
-const gbox = $('graphics');
 for (const [id, g] of Object.entries(GRAPHICS)) {
   const b = document.createElement('button');
   b.type = 'button'; b.className = g.dark ? 'gbtn dark' : 'gbtn'; b.innerHTML = `<img alt=""><span>${g.name}</span>`;
   b.setAttribute('aria-label', `Añadir ${g.name}`);
-  const { canvas: c, ctx } = makeCanvas(g.w / 4, g.h / 4);
-  Promise.resolve(g.draw(ctx, c.width, c.height, '#080808')).then(() => { b.querySelector('img').src = c.toDataURL(); });
-  b.addEventListener('click', () => addLayer({ kind: g.kind || 'grafico', name: g.name, w: g.w, h: g.h, cm: g.cm, draw: g.draw, srcPx: g.srcPx, fixedInk: g.fixedInk }));
-  gbox.append(b);
+  const { canvas: c, ctx } = makeCanvas(Math.round(g.w / 4), Math.round(g.h / 4));
+  Promise.resolve(g.draw(ctx, c.width, c.height, '#080808')).then(() => {
+    b.querySelector('img').src = c.toDataURL();
+    if (g.client) g.inkLum = meanLum(c, c.width, c.height);
+  });
+  b.addEventListener('click', () => addLayer({ kind: g.kind || 'grafico', name: g.name, w: g.w, h: g.h, cm: g.cm, draw: g.draw, srcPx: g.srcPx, fixedInk: g.fixedInk, inkLum: g.inkLum }));
+  (g.client ? $('coleccion') : $('graphics')).append(b);
 }
 
 $('add-text').addEventListener('click', () => {
@@ -563,13 +635,8 @@ $('upload').addEventListener('change', (e) => {
   img.onload = () => {
     const scale = Math.min(1, 2048 / Math.max(img.naturalWidth, img.naturalHeight));
     const w = Math.max(1, Math.round(img.naturalWidth * scale)), h = Math.max(1, Math.round(img.naturalHeight * scale));
-    // luminancia media de los píxeles visibles, para el aviso de contraste
-    const probe = makeCanvas(64, Math.max(1, Math.round(64 * h / w))); probe.ctx.drawImage(img, 0, 0, probe.canvas.width, probe.canvas.height);
-    const d = probe.ctx.getImageData(0, 0, probe.canvas.width, probe.canvas.height).data;
-    let sum = 0, n = 0;
-    for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 128) { const hex = '#' + [d[i], d[i + 1], d[i + 2]].map(v => v.toString(16).padStart(2, '0')).join(''); sum += lum(hex); n++; }
     addLayer({ kind: 'imagen', name: `Imagen: ${file.name}`, w, h, cm: 20, srcPx: file.type === 'image/svg+xml' ? Infinity : img.naturalWidth,
-      inkLum: n ? sum / n : null, fixedInk: true, draw: (c, cw, ch) => c.drawImage(img, 0, 0, cw, ch) })
+      inkLum: meanLum(img, w, h), fixedInk: true, draw: (c, cw, ch) => c.drawImage(img, 0, 0, cw, ch) })
       .finally(() => URL.revokeObjectURL(url));
   };
   img.onerror = () => { err.textContent = 'No se pudo leer la imagen. Prueba con otro archivo.'; err.hidden = false; URL.revokeObjectURL(url); };
@@ -582,15 +649,16 @@ function select(layer) {
   refreshUI();
 }
 const size = $('size'), rot = $('rot');
-size.addEventListener('input', () => { if (!selected) return; selected.cm = +size.value; $('size-out').value = `${size.value} cm`; queueRebuild(selected); refreshChecks(); });
-rot.addEventListener('input', () => { if (!selected) return; selected.rot = +rot.value; $('rot-out').value = `${rot.value}°`; queueRebuild(selected); refreshChecks(); });
+function syncSize() { size.value = selected.cm; $('size-out').value = `${selected.cm} cm`; }
+size.addEventListener('input', () => { if (!selected) return; selected.cm = +size.value; fit(selected); syncSize(); queueRebuild(selected); refreshChecks(); });
+rot.addEventListener('input', () => { if (!selected) return; selected.rot = +rot.value; $('rot-out').value = `${rot.value}°`; fit(selected); syncSize(); queueRebuild(selected); refreshChecks(); });
 size.addEventListener('change', () => selected && commit());
 rot.addEventListener('change', () => selected && commit());
 $('flip').addEventListener('click', () => { if (!selected) return; selected.flip = !selected.flip; applyFlip(selected); commit(); });
 $('center').addEventListener('click', () => {
   if (!selected) return;
   const name = selected.panel.name;
-  setPose(selected, defaultHit(name, 0, name === 'Frente' ? -0.28 : -0.26)); rebuild(selected); commit();
+  setPose(selected, defaultHit(name, 0, name === 'Frente' ? -0.28 : -0.26)); fit(selected); rebuild(selected); commit();
 });
 $('remove').addEventListener('click', () => {
   if (!selected) return;
@@ -625,7 +693,7 @@ function refreshUI() {
     li.append(b, d); list.append(li);
   });
   $('layers-empty').hidden = layers.length > 0;
-  $('hint').textContent = layers.length ? 'Arrastra un gráfico para moverlo. Fuera de él, giras la prenda.' : 'Añade un gráfico desde el panel.';
+  $('hint').textContent = layers.length ? 'Arrastra un gráfico para moverlo y una esquina azul para cambiar su tamaño. Fuera de él, giras la prenda.' : 'Añade un gráfico desde el panel.';
   $('sel').hidden = !selected;
   $('undo').disabled = !past.length; $('redo').disabled = !future.length;
   if (selected) {

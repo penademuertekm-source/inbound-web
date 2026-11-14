@@ -245,6 +245,33 @@ a{color:inherit}
 @keyframes par-art{to{translate:0 16svh}}
 @keyframes par-copy{to{translate:0 -6svh}}
 
+/* registro: marcas de serigrafía en la esquina de fichas y fotos de técnica */
+.closing-tag span{display:block}
+.product,.tech{position:relative}
+.reg{position:absolute;top:-12px;right:-12px;z-index:1;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.2;stroke-dasharray:1;pointer-events:none}
+.drop-grid{view-timeline:--drop block}
+.steps{view-timeline:--steps block} /* .steps hace scroll horizontal: sus tarjetas leen el avance vertical de la lista */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    /* racleta: revela de izquierda a derecha como una pasada de serigrafía */
+    .section-head .display,.triad span,.closing-tag span{animation:racleta-txt linear both;animation-timeline:view();animation-range:entry 15% cover 35%}
+    .closing-tag span+span{animation-range:entry 35% cover 45%}
+    .reg{animation:registro linear both;animation-timeline:view();animation-range:entry 20% cover 40%}
+    /* peso: cae unos px y asienta, en cascada */
+    .product{animation:peso linear both;animation-timeline:--drop;animation-range:entry 0% entry 55%}
+    .product:nth-child(2){animation-range:entry 10% entry 65%}
+    .product:nth-child(3){animation-range:entry 20% entry 75%}
+    .step{animation:peso linear both;animation-timeline:--steps;animation-range:entry 0% entry 40%}
+    .step:nth-child(2){animation-range:entry 5% entry 45%}
+    .step:nth-child(3){animation-range:entry 10% entry 50%}
+    .step:nth-child(4){animation-range:entry 15% entry 55%}
+    .step:nth-child(n+5){animation-range:entry 20% entry 60%}
+  }
+}
+@keyframes racleta-txt{from{clip-path:inset(-20% 100% -20% -5%)}to{clip-path:inset(-20% -5% -20% -5%)}}
+@keyframes registro{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes peso{from{translate:0 -20px;opacity:0}to{translate:0 0;opacity:1}}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *{transition:none!important}
@@ -261,6 +288,8 @@ a{color:inherit}
     <g fill="none" stroke="currentColor" stroke-width="3.4"><path d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><path d="M129.5,1.7 H133.5"/><path d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/></g>
     <circle cx="147.4" cy="2.6" r="2.2" fill="none" stroke="currentColor" stroke-width=".6"/>
   </symbol>
+  <!-- Marca de registro de serigrafía (Fase 2b): pathLength=1 para dibujarla con stroke-dashoffset -->
+  <symbol id="reg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" pathLength="1"/><path d="M12 0V24M0 12H24" pathLength="1"/></symbol>
 </svg>
 
 <header class="site-header" id="site-header">
@@ -310,18 +339,21 @@ a{color:inherit}
     </div>
     <div class="drop-grid">
       <article class="product">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/drop-siluetas.jpg" alt="Espalda de una camiseta negra boxy con dos siluetas difuminadas en azul y blanco y la etiqueta INBOUND, Hecho en Colombia." loading="lazy" width="1245" height="1245">
         <div class="product-meta"><h3 class="h3">Siluetas</h3><span class="data">IB-001</span></div>
         <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
         <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
       </article>
       <article class="product">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/drop-destello.jpg" alt="Camiseta corta negra con una estrella blanca que gotea y el texto INBOUND." loading="lazy" width="1245" height="1245">
         <div class="product-meta"><h3 class="h3">Destello</h3><span class="data">IB-002</span></div>
         <p class="data" style="margin:0">Drop top, 310 GSM</p>
         <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
       </article>
       <article class="product">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/drop-balaclava.jpg" alt="Camiseta negra con el retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="388" height="377">
         <div class="product-meta"><h3 class="h3">Anónimo 26</h3><span class="data">IB-003</span></div>
         <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
@@ -456,16 +488,19 @@ a{color:inherit}
     <h3 class="h3 subhead">Cada técnica donde rinde más</h3>
     <div class="techs">
       <article class="tech">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/tec-serigrafia.jpg" alt="Marco de serigrafía con el logo INBOUND y la frase The future is yours." loading="lazy">
         <h4 class="h3">Serigrafía</h4>
         <p class="muted">Gráficos grandes. Tinta que se queda en la tela.</p>
       </article>
       <article class="tech">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/tec-dtf.jpg" alt="Impresora DTF imprimiendo una tira con el logo INBOUND repetido." loading="lazy">
         <h4 class="h3">DTF</h4>
         <p class="muted">Letras y detalles finos. Se imprime en film y se fija con prensa térmica.</p>
       </article>
       <article class="tech">
+        <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <!-- Imagen IA (Figma, archivo "INBOUND – imágenes del proceso"), provisional hasta tener foto real del taller -->
         <img src="assets/tec-alta-densidad.png" alt="Prensa de marquillas con una etiqueta negra que lleva el logo INBOUND en relieve de alta densidad." width="960" height="720" loading="lazy">
         <h4 class="h3">Alta densidad</h4>
@@ -522,7 +557,7 @@ a{color:inherit}
   <section class="closing" aria-label="Comprar">
     <div class="closing-inner">
       <svg class="logo-mark" viewBox="0 0 150.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
-      <p class="closing-tag">No necesitas perseguir la atención.<br>La atención llega a ti.</p>
+      <p class="closing-tag"><span>No necesitas perseguir la atención.</span><span>La atención llega a ti.</span></p>
       <a class="cta-glow" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
     </div>
     <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>

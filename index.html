@@ -268,6 +268,20 @@ a{color:inherit}
     .step:nth-child(n+5){animation-range:entry 20% entry 60%}
   }
 }
+/* 2D (Fase 2c) */
+/* regla de gramaje: sustituye el filete superior de la franja de datos del hero */
+.hero-data{border-top:0;padding-top:0}
+.gsm-rule{flex:0 0 100%;position:relative;display:flex;justify-content:space-between;padding-top:16px;font-size:10px;text-transform:none;color:var(--gray);background:linear-gradient(var(--line-light),var(--line-light)) top/100% 1px no-repeat,repeating-linear-gradient(90deg,var(--line-light) 0 1px,transparent 1px 4%) top/100% 5px no-repeat,repeating-linear-gradient(90deg,rgba(255,255,255,.5) 0 1px,transparent 1px 20%) top/100% 9px no-repeat}
+.gsm-mark{position:absolute;left:64%;top:0;height:28px;padding:14px 0 0 6px;border-left:2px solid var(--white);color:var(--white)} /* (310-150)/250 = 64% */
+/* muestras de técnica: tinta plana, punto de DTF, capas de relieve */
+.tech-title{display:flex;align-items:center;gap:10px}
+.tech-sw{width:26px;height:26px;flex:none;fill:currentColor}
+/* ruta del proceso: línea discontinua que une los 7 pasos */
+.step{position:relative;padding-top:26px}
+.step::before{content:"";position:absolute;top:6px;left:6px;right:calc(-1 * var(--s3));border-top:1.5px dashed var(--gray)}
+.step::after{content:"";position:absolute;top:1px;left:0;width:12px;height:12px;border-radius:50%;background:var(--white)}
+.step:last-child::before{display:none}
+
 @keyframes racleta-txt{from{clip-path:inset(-20% 100% -20% -5%)}to{clip-path:inset(-20% -5% -20% -5%)}}
 @keyframes registro{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @keyframes peso{from{translate:0 -20px;opacity:0}to{translate:0 0;opacity:1}}
@@ -317,6 +331,8 @@ a{color:inherit}
       </div>
     </div>
     <ul class="hero-data data">
+      <!-- regla de gramaje (Fase 2c): escala 150–400 g/m², marca en 310 -->
+      <li class="gsm-rule" aria-hidden="true"><span>150</span><span class="gsm-mark">310</span><span>400 g/m²</span></li>
       <li>310+ GSM</li><li>Boxy / Oversize</li><li>Drop 001</li><li>Hecho en Colombia</li>
     </ul>
   </section>
@@ -490,20 +506,20 @@ a{color:inherit}
       <article class="tech">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/tec-serigrafia.jpg" alt="Marco de serigrafía con el logo INBOUND y la frase The future is yours." loading="lazy">
-        <h4 class="h3">Serigrafía</h4>
+        <h4 class="h3 tech-title"><svg class="tech-sw" viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="4" width="32" height="32"/></svg>Serigrafía</h4>
         <p class="muted">Gráficos grandes. Tinta que se queda en la tela.</p>
       </article>
       <article class="tech">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <img src="assets/tec-dtf.jpg" alt="Impresora DTF imprimiendo una tira con el logo INBOUND repetido." loading="lazy">
-        <h4 class="h3">DTF</h4>
+        <h4 class="h3 tech-title"><svg class="tech-sw" viewBox="0 0 40 40" aria-hidden="true"><pattern id="sw-dots" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="1.4"/></pattern><rect x="4" y="4" width="32" height="32" fill="url(#sw-dots)"/></svg>DTF</h4>
         <p class="muted">Letras y detalles finos. Se imprime en film y se fija con prensa térmica.</p>
       </article>
       <article class="tech">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
         <!-- Imagen IA (Figma, archivo "INBOUND – imágenes del proceso"), provisional hasta tener foto real del taller -->
         <img src="assets/tec-alta-densidad.png" alt="Prensa de marquillas con una etiqueta negra que lleva el logo INBOUND en relieve de alta densidad." width="960" height="720" loading="lazy">
-        <h4 class="h3">Alta densidad</h4>
+        <h4 class="h3 tech-title"><svg class="tech-sw" viewBox="0 0 40 40" aria-hidden="true"><rect x="12" y="4" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="8" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="12" width="24" height="24"/></svg>Alta densidad</h4>
         <p class="muted">Marquillas con relieve que se siente al tacto y aguanta lavado tras lavado.</p>
       </article>
     </div>

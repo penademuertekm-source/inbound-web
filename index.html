@@ -295,6 +295,29 @@ a{color:inherit}
 @keyframes registro{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @keyframes peso{from{translate:0 -20px;opacity:0}to{translate:0 0;opacity:1}}
 
+/* Ficha rápida del Drop (Fase 3b) */
+.quick{position:relative;display:block;width:100%;padding:0;border:0;background:none;color:inherit;cursor:zoom-in}
+.quick-hint{position:absolute;right:10px;bottom:10px;padding:3px 8px;background:var(--ink);color:var(--white)}
+.quick-view{width:min(1040px,calc(100% - 2 * var(--gutter)));max-height:calc(100svh - 2 * var(--gutter));padding:0;border:0;background:var(--ink);color:var(--white);overflow:auto}
+.quick-view::backdrop{background:rgba(8,8,8,.78)}
+.quick-body{display:grid;gap:var(--s4);padding:var(--s4)}
+.quick-media{display:grid;gap:var(--s2)}
+.quick-media img{width:100%;max-height:72svh;aspect-ratio:4/5;object-fit:contain;background:var(--white)}
+.quick-worn{margin:0;display:grid;gap:8px}
+.quick-worn[hidden]{display:none}
+.quick-media.has-worn{grid-template-columns:1fr 1fr} /* plana y puesta lado a lado, también en móvil */
+.quick-worn img{object-fit:cover}
+.quick-info{display:grid;gap:var(--s2);align-content:end}
+.quick-info p{margin:0;max-width:40ch}
+.quick-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:var(--s1)}
+#quick-flat{view-transition-name:quick-img} /* la foto viaja desde la ficha pulsada */
+@media (min-width:860px){
+  .quick-body{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end}
+  .quick-body:has(.has-worn){grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+}
+::view-transition-group(quick-img){animation-duration:.3s;animation-timing-function:cubic-bezier(.23,1,.32,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+
 /* menos movimiento: se quita el desplazamiento; los cambios de color y opacidad se mantienen */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -366,21 +389,21 @@ a{color:inherit}
     <div class="drop-grid">
       <article class="product">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
-        <img src="assets/drop-siluetas.webp" alt="Espalda de una camiseta negra boxy con dos siluetas difuminadas en azul y blanco y la etiqueta INBOUND, Hecho en Colombia." loading="lazy" width="1245" height="1245">
+        <button class="quick" type="button" aria-label="Ver Siluetas de cerca" data-worn="assets/lineas/grafica.jpg" data-worn-alt="Modelo de espaldas con la camiseta Siluetas puesta."><img src="assets/drop-siluetas.webp" alt="Espalda de una camiseta negra boxy con dos siluetas difuminadas en azul y blanco y la etiqueta INBOUND, Hecho en Colombia." loading="lazy" width="1245" height="1245"><span class="quick-hint data" aria-hidden="true">Ver de cerca</span></button>
         <div class="product-meta"><h3 class="h3">Siluetas</h3><span class="data">IB-001</span></div>
         <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
         <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
       </article>
       <article class="product">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
-        <img src="assets/drop-destello.webp" alt="Camiseta corta negra con una estrella blanca que gotea y el texto INBOUND." loading="lazy" width="1245" height="1245">
+        <button class="quick" type="button" aria-label="Ver Destello de cerca" data-worn="assets/lineas/drop-top.jpg" data-worn-alt="Modelo con el drop top Destello puesto, de frente y de espaldas."><img src="assets/drop-destello.webp" alt="Camiseta corta negra con una estrella blanca que gotea y el texto INBOUND." loading="lazy" width="1245" height="1245"><span class="quick-hint data" aria-hidden="true">Ver de cerca</span></button>
         <div class="product-meta"><h3 class="h3">Destello</h3><span class="data">IB-002</span></div>
         <p class="data" style="margin:0">Drop top, 310 GSM</p>
         <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
       </article>
       <article class="product">
         <svg class="reg" aria-hidden="true"><use href="#reg"/></svg>
-        <img src="assets/drop-balaclava.webp" alt="Camiseta negra con el retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="388" height="377">
+        <button class="quick" type="button" aria-label="Ver Anónimo 26 de cerca"><img src="assets/drop-balaclava.webp" alt="Camiseta negra con el retrato de un rostro cubierto por un pasamontañas de malla y el año 2026." loading="lazy" width="388" height="377"><span class="quick-hint data" aria-hidden="true">Ver de cerca</span></button>
         <div class="product-meta"><h3 class="h3">Anónimo 26</h3><span class="data">IB-003</span></div>
         <p class="data" style="margin:0">Boxy fit, 310 GSM</p>
         <a href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a>
@@ -588,6 +611,22 @@ a{color:inherit}
     </div>
     <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>
   </section>
+  <!-- Ficha rápida del Drop (Fase 3b): se rellena desde la ficha pulsada -->
+  <dialog class="quick-view" id="quick" aria-labelledby="quick-title">
+    <div class="quick-body">
+      <div class="quick-media">
+        <img id="quick-flat" alt="" width="900" height="900">
+        <figure class="quick-worn" hidden><img id="quick-worn" alt="" width="600" height="750"><figcaption class="data">Puesta</figcaption></figure>
+      </div>
+      <div class="quick-info">
+        <p class="data muted" id="quick-code"></p>
+        <h2 class="display h2-m" id="quick-title"></h2>
+        <p class="data" id="quick-spec"></p>
+        <p class="muted">Primera tirada, pocas unidades. Se pide por mensaje directo: te confirmamos talla y entrega.</p>
+        <div class="quick-actions"><a class="btn btn-solid" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Pedir por DM</a><button class="btn" type="button" data-close>Cerrar</button></div>
+      </div>
+    </div>
+  </dialog>
 </main>
 
 <footer class="site-footer">
@@ -795,6 +834,37 @@ a{color:inherit}
     const i = atEnd ? total : Math.round(steps.scrollLeft / stepW()) + 1;
     stepPos.textContent = `${pad(i)} / ${pad(total)}`;
   }, { passive: true });
+
+  // Drop: ficha rápida. La foto viaja desde la ficha con View Transitions; sin soporte o con menos movimiento abre sin animar
+  const quick = document.getElementById("quick"), qFlat = document.getElementById("quick-flat"), qWorn = document.getElementById("quick-worn");
+  const vt = fn => {
+    if (!document.startViewTransition || reduceMotion) { fn(); return null; }
+    const t = document.startViewTransition(fn);
+    t.ready.catch(() => {});   // se aborta si la pestaña se oculta a mitad: el cambio igual se aplica
+    return t;
+  };
+  let qSource = null;
+  document.querySelectorAll(".quick").forEach(btn => btn.addEventListener("click", () => {
+    const card = btn.closest(".product"), img = btn.querySelector("img"), worn = btn.dataset.worn;
+    document.querySelectorAll(".quick img").forEach(i => { i.style.viewTransitionName = ""; }); // por si un Esc forzado cerró sin transición
+    qSource = img;
+    qFlat.src = img.currentSrc || img.src; qFlat.alt = img.alt;
+    document.getElementById("quick-title").textContent = card.querySelector("h3").textContent;
+    document.getElementById("quick-code").textContent = card.querySelector(".product-meta .data").textContent;
+    document.getElementById("quick-spec").textContent = card.querySelector("p.data").textContent;
+    qWorn.parentElement.hidden = !worn;
+    quick.querySelector(".quick-media").classList.toggle("has-worn", !!worn);
+    if (worn) { qWorn.src = worn; qWorn.alt = btn.dataset.wornAlt; }
+    img.style.viewTransitionName = "quick-img";
+    vt(() => { img.style.viewTransitionName = ""; quick.showModal(); });
+  }));
+  const closeQuick = () => {
+    const t = vt(() => { quick.close(); qSource.style.viewTransitionName = "quick-img"; });
+    const clear = () => { qSource.style.viewTransitionName = ""; };
+    t ? t.finished.finally(clear) : clear();
+  };
+  quick.addEventListener("cancel", e => { e.preventDefault(); closeQuick(); });   // Esc
+  quick.addEventListener("click", e => { if (e.target === quick || e.target.closest("[data-close]")) closeQuick(); });
 })();
 </script>
 </body>

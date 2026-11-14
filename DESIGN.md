@@ -79,6 +79,7 @@ Escala modular 1.333 (expresiva), base 16px:
 | Ficha de producto | Componente | Prenda del Drop 001 | cuadrada, fondo blanco, código IB-00X, CTA "Pedir por DM" |
 | Paso de proceso | Componente | Una etapa de "Del diseño a la prenda" (secuencia real: numerada) | 7 pasos |
 | Técnica | Componente | Serigrafía / DTF / Alta densidad con foto | 3 |
+| Ficha rápida | Componente | `<dialog>` nativo al tocar la foto de una ficha del Drop: plana + puesta (si hay foto), código, corte, CTA "Pedir por DM". La foto viaja desde la ficha con View Transitions (.3s, ease-out fuerte); sin soporte o con menos movimiento abre sin animar | Con o sin foto puesta |
 | Índice de líneas | Patrón | "Tu estilo, nuestra esencia": foto 4:5 fija a la izquierda que cambia con una pasada de racleta (clip-path ligado al scroll) al llegar a cada línea; filas con número, nombre, descriptores (Dato) y swatches | Escritorio ≥1024 con soporte de `timeline-scope`; sin soporte, en tableta o con reduced-motion, la foto va junto a cada fila |
 | Configurador | Patrón | Diseña tu INBOUND: vista previa SVG + controles + validación + resumen | — |
 

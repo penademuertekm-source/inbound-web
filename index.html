@@ -497,9 +497,11 @@ a{color:inherit}
         <fieldset class="field">
           <legend class="label">Corte</legend>
           <div class="chips">
+            <label class="chip"><input type="radio" name="corte" value="Normal"><span>Normal</span></label>
             <label class="chip"><input type="radio" name="corte" value="Oversize" checked><span>Oversize</span></label>
             <label class="chip"><input type="radio" name="corte" value="Boxy fit"><span>Boxy fit</span></label>
           </div>
+          <p class="hint" id="corte-hint" aria-live="polite">Holgada y larga, con el hombro caído.</p>
         </fieldset>
 
         <fieldset class="field">
@@ -608,7 +610,7 @@ a{color:inherit}
         <h4 class="h3 tech-title"><svg class="tech-sw" viewBox="0 0 40 40" aria-hidden="true"><rect x="12" y="4" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="8" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="12" width="24" height="24"/></svg>Alta densidad</h4>
         <p class="muted">Marquillas con relieve que se siente al tacto y aguanta lavado tras lavado.</p>
       </article>
-    </div>
+    </div>
   </section>
 
   <section class="section" aria-labelledby="lineas-title">
@@ -722,14 +724,19 @@ a{color:inherit}
       `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${c.name}" ${i === 0 ? "checked" : ""} aria-label="${c.name}"><span></span></label>`);
   });
 
-  // Silhouette: oversize = longer body + dropped sleeves; boxy = wider and shorter.
+  // Siluetas: normal = hombro en su sitio, manga corta y alta; oversize = más ancha y larga, hombro caído;
+  // boxy = la más ancha y la más corta. hw = medio ancho, len = largo, sl = manga, arm = sisa, cuff = puño (exterior/interior)
+  const CUTS = {
+    "Normal":   { hw: 114, len: 400, sl: 58, arm: 108, cuffOut: 92,  cuffIn: 132, hint: "Corte clásico: hombro en su sitio y largo de siempre." },
+    "Oversize": { hw: 132, len: 410, sl: 82, arm: 128, cuffOut: 120, cuffIn: 168, hint: "Holgada y larga, con el hombro caído." },
+    "Boxy fit": { hw: 150, len: 370, sl: 70, arm: 128, cuffOut: 120, cuffIn: 168, hint: "Ancha y corta, de caída recta y cuadrada." },
+  };
   function teePath(cut) {
-    const cx = 220, top = 30;
-    const hw = cut === "Boxy fit" ? 150 : 132, len = cut === "Boxy fit" ? 370 : 410, sl = cut === "Boxy fit" ? 70 : 82;
+    const cx = 220, top = 30, { hw, len, sl, arm, cuffOut, cuffIn } = CUTS[cut] || CUTS.Oversize;
     const p = [
-      [cx - 46, top], [cx - hw + 14, top + 22], [cx - hw - sl + 20, top + 120], [cx - hw - sl + 52, top + 168],
-      [cx - hw, top + 128], [cx - hw + 4, top + len], [cx + hw - 4, top + len], [cx + hw, top + 128],
-      [cx + hw + sl - 52, top + 168], [cx + hw + sl - 20, top + 120], [cx + hw - 14, top + 22], [cx + 46, top],
+      [cx - 46, top], [cx - hw + 14, top + 22], [cx - hw - sl + 20, top + cuffOut], [cx - hw - sl + 52, top + cuffIn],
+      [cx - hw, top + arm], [cx - hw + 4, top + len], [cx + hw - 4, top + len], [cx + hw, top + arm],
+      [cx + hw + sl - 52, top + cuffIn], [cx + hw + sl - 20, top + cuffOut], [cx + hw - 14, top + 22], [cx + 46, top],
     ];
     return { d: "M" + p.map(q => q.join(",")).join(" L") + " Q" + cx + "," + (top + 34) + " " + p[0].join(",") + " Z", top, len, hw };
   }
@@ -768,6 +775,8 @@ a{color:inherit}
     const color = COLORS.find(c => c.name === s.color);
     const ink = color.dark ? INK_LIGHT : INK_DARK;
     const shape = teePath(s.corte);
+    const hint = document.getElementById("corte-hint"), hintText = (CUTS[s.corte] || CUTS.Oversize).hint;
+    if (hint.textContent !== hintText) hint.textContent = hintText;   // solo al cambiar de corte: el lector de pantalla no lo repite
     const body = document.getElementById("tee-body");
     body.setAttribute("d", shape.d);
     body.setAttribute("fill", color.hex);

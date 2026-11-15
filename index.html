@@ -7,6 +7,16 @@
 <meta name="description" content="Camisetas boxy fit en algodón 310+ GSM. Diseña tu INBOUND o compra el Drop 001, stock limitado.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="assets/fuentes/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>
+/* Motion antes del primer pintado (sin parpadeo): .motion activa los revelados; .intro, la entrada (una vez por sesión) */
+(() => {
+  const d = document.documentElement;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  d.classList.add("motion");
+  try { if (sessionStorage.getItem("inbound-intro")) return; sessionStorage.setItem("inbound-intro", "1"); } catch (e) {}
+  d.classList.add("intro");
+})();
+</script>
 <style>
 /* Fuentes servidas desde el propio sitio (SIL OFL 1.1): sin peticiones a Google */
 @font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(assets/fuentes/archivo-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
@@ -59,7 +69,6 @@ a{color:inherit}
 @media (hover:hover) and (pointer:fine){
   .btn-solid:hover{opacity:.8}
   .btn-ghost:hover{background:rgba(133,133,133,.2)}
-  .nav a:hover{border-color:currentColor}
   .chip:not(.swatch):hover span{background:rgba(0,0,0,.06)}
   .chip input:checked:hover+span{background:var(--ink)}
   .swatch input:checked:hover+span{background:var(--c)}
@@ -71,7 +80,17 @@ a{color:inherit}
 .logo{display:inline-flex;align-items:center;min-height:44px;color:var(--white)}
 .logo svg{width:132px;height:auto}
 .nav{display:flex;gap:var(--s3);margin-left:auto;align-items:center}
-.nav a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap;border-bottom:1.5px solid transparent}
+.nav a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap}
+/* nav en fila (tableta y ordenador): "pasada de racleta" al pasar el ratón o con foco de teclado.
+   Una franja de tinta cruza el enlace de izquierda a derecha, el texto se invierte (difference) y al salir sigue hacia la derecha */
+@media (min-width:768px){
+  .nav a{position:relative}
+  .nav a::after{content:"";position:absolute;inset:9px -8px;background:var(--white);mix-blend-mode:difference;transform:scaleX(0);transform-origin:right;transition:transform .18s cubic-bezier(.23,1,.32,1);pointer-events:none}
+  .nav a:focus-visible::after{transform:scaleX(1);transform-origin:left;transition-duration:.22s}
+}
+@media (min-width:768px) and (hover:hover) and (pointer:fine){
+  .nav a:hover::after{transform:scaleX(1);transform-origin:left;transition-duration:.22s}
+}
 .header-cta{min-height:40px;padding:0 18px;font-size:15px}
 .menu-btn{display:none}
 @media (max-width:479px){.header-cta{display:none}.menu-btn{margin-left:auto}}
@@ -203,7 +222,7 @@ a{color:inherit}
     .lineas-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s8);align-items:start;timeline-scope:--l2,--l3}
     .lineas-media{display:block;position:sticky;top:calc(61px + var(--s4));width:min(100%,calc((100svh - 61px - var(--s8)) * .8));aspect-ratio:4/5}
     .lineas-media img{position:absolute;inset:0;height:100%}
-    .lineas-media img+img{clip-path:inset(0 100% 0 0);animation:racleta linear both;animation-range:cover 26% cover 40%}
+    .lineas-media img+img{clip-path:inset(0 100% 0 0);animation:racleta linear both;animation-range:cover 22% cover 42%}
     .lineas-media img:nth-child(2){animation-timeline:--l2}
     .lineas-media img:nth-child(3){animation-timeline:--l3}
     .line:nth-child(2){view-timeline:--l2 block}
@@ -236,8 +255,14 @@ a{color:inherit}
 .footer-mark{display:block;width:100%;height:auto;color:var(--white)}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s2);color:var(--gray)}
 @media (min-width:860px){.footer-cols{grid-template-columns:2fr 1fr 1fr}}
+/* celular: bloque centrado sobre el logo (que ocupa todo el ancho); Explora y Pedidos lado a lado para no alargar la columna */
+@media (max-width:599px){
+  .footer-cols{grid-template-columns:1fr 1fr;column-gap:var(--s2);text-align:center}
+  .footer-claim{grid-column:1 / -1}
+  .footer-cols ul{justify-items:center}
+}
 
-/* ---------- Motion (ver DESIGN.md › Motion): todo ligado al scroll; sin soporte o con menos movimiento se ve quieto ---------- */
+/* ---------- Motion (ver DESIGN.md › Motion): parallax ligado al scroll; revelados y entrada por tiempo; sin soporte o con menos movimiento se ve quieto ---------- */
 .site-header{transition:translate .2s cubic-bezier(.23,1,.32,1)}
 .site-header.hide{translate:0 -100%}
 @supports (animation-timeline:scroll()){
@@ -246,6 +271,8 @@ a{color:inherit}
     .hero-art{animation:par-art linear both;animation-timeline:scroll(root);animation-range:0 100svh}
     .hero-copy{animation:par-copy linear both;animation-timeline:scroll(root);animation-range:0 100svh}
     .lite .hero-copy{animation:none}
+    /* la entrada se suma al parallax (propiedades distintas: scale y translate) */
+    .intro .hero-art{animation:par-art linear both,asienta 1.2s cubic-bezier(.23,1,.32,1) both;animation-timeline:scroll(root),auto;animation-range:0 100svh,normal}
   }
 }
 @keyframes par-art{to{translate:0 var(--par,16svh)}}
@@ -256,28 +283,50 @@ a{color:inherit}
 .closing-tag span{display:block}
 .product,.tech{position:relative}
 .reg{position:absolute;top:-12px;right:-12px;z-index:1;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.2;stroke-dasharray:1;pointer-events:none}
-.drop-grid{view-timeline:--drop block}
-.steps{view-timeline:--steps block} /* .steps hace scroll horizontal: sus tarjetas leen el avance vertical de la lista */
-@supports (animation-timeline:view()){
-  @media (prefers-reduced-motion:no-preference){
-    /* racleta: revela de izquierda a derecha como una pasada de serigrafía */
-    .section-head .display,.triad span,.closing-tag span{animation:racleta-txt linear both;animation-timeline:view();animation-range:entry 15% cover 35%}
-    .closing-tag span+span{animation-range:entry 35% cover 45%}
-    .reg{animation:registro linear both;animation-timeline:view();animation-range:entry 20% cover 40%}
-    /* peso: cae unos px y asienta, en cascada */
-    /* ease-out fuerte: la caída frena al final (asienta) en vez de moverse a velocidad constante */
-    .product{animation:peso cubic-bezier(.23,1,.32,1) both;animation-timeline:--drop;animation-range:entry 0% entry 55%}
-    .product:nth-child(2){animation-range:entry 10% entry 65%}
-    .product:nth-child(3){animation-range:entry 20% entry 75%}
-    /* en una columna las fichas están apiladas: cada una usa su propia entrada en pantalla */
-    @media (max-width:699px){.product:nth-child(n){animation-timeline:view();animation-range:entry 0% entry 70%}}
-    .step{animation:peso cubic-bezier(.23,1,.32,1) both;animation-timeline:--steps;animation-range:entry 0% entry 40%}
-    .step:nth-child(2){animation-range:entry 5% entry 45%}
-    .step:nth-child(3){animation-range:entry 10% entry 50%}
-    .step:nth-child(4){animation-range:entry 15% entry 55%}
-    .step:nth-child(n+5){animation-range:entry 20% entry 60%}
-  }
-}
+/* Revelados (racleta, peso, registro): se disparan al entrar en pantalla y corren a su propio ritmo, una sola vez.
+   Antes iban ligados al scroll y, al bajar rápido, terminaban antes de verse.
+   .motion la pone el script del <head> (JS + IntersectionObserver + sin "reducir movimiento"); sin ella todo se ve quieto.
+   --d: retraso en cascada (80 ms) cuando entran varios a la vez; lo calcula el script del final */
+.motion :is(.section-head .display,.triad span,.closing-tag span):not(.in){clip-path:inset(-20% 100% -20% -5%)}
+.motion :is(.product,.step):not(.in){opacity:0;translate:0 -20px}
+.motion .reg:not(.in){stroke-dashoffset:1}
+/* racleta: ease-in-out, como una pasada real (arranca, cruza, frena) */
+.motion :is(.section-head .display,.triad span,.closing-tag span).in{animation:racleta-txt .75s cubic-bezier(.77,0,.175,1) var(--d,0ms) both}
+/* peso: ease-out fuerte, cae y asienta */
+.motion :is(.product,.step).in{animation:peso .65s cubic-bezier(.23,1,.32,1) var(--d,0ms) both}
+.motion .reg.in{animation:registro .9s cubic-bezier(.77,0,.175,1) calc(var(--d,0ms) + .25s) both}
+
+/* Entrada (.intro: primera carga de la sesión, ~1,5 s). Todo es clicable desde el primer instante.
+   La foto del hero es el LCP: nunca parte invisible, solo se asienta (escala) */
+.hero h1 .ln{display:block;width:max-content} /* "HEAVYWEIGHT" sobresale de los 9ch del h1: el recorte debe medir la palabra, no la caja */
+.intro .logo svg{animation:racleta-txt .6s cubic-bezier(.77,0,.175,1) both}
+.intro :is(.nav a,.header-cta,.menu-btn){animation:asoma .4s cubic-bezier(.23,1,.32,1) .15s both}
+.intro .nav a:nth-child(2){animation-delay:.2s}
+.intro .nav a:nth-child(3){animation-delay:.25s}
+.intro .nav a:nth-child(4){animation-delay:.3s}
+.intro .nav a:nth-child(5){animation-delay:.35s}
+.intro .header-cta{animation-delay:.4s}
+/* titular: una pasada de racleta por línea */
+.intro .hero h1 .ln{animation:linea .7s cubic-bezier(.77,0,.175,1) .1s both}
+.intro .hero h1 .ln:nth-child(2){animation-delay:.22s}
+.intro .hero h1 .ln:nth-child(3){animation-delay:.34s}
+.intro .hero .lede{animation:sube .5s cubic-bezier(.23,1,.32,1) .5s both}
+.intro .hero-actions{animation:sube .5s cubic-bezier(.23,1,.32,1) .6s both}
+@supports not (animation-timeline:scroll()){.intro .hero-art{animation:asienta 1.2s cubic-bezier(.23,1,.32,1) both}} /* con parallax: ver bloque de arriba */
+/* regla de gramaje: se extiende como un metro y después caen sus cifras; luego los datos */
+.intro .gsm-rule{animation:metro .9s cubic-bezier(.33,1,.68,1) .55s both} /* ease-out suave: se nota cómo se estira la cinta */
+.intro .gsm-rule span{animation:asoma .35s cubic-bezier(.23,1,.32,1) 1s both}
+.intro .gsm-rule .gsm-mark{animation-delay:1.1s}
+.intro .gsm-rule span:last-child{animation-delay:1.2s}
+.intro .hero-data li:not(.gsm-rule){animation:sube .4s cubic-bezier(.23,1,.32,1) 1.1s both}
+.intro .hero-data li:nth-child(3){animation-delay:1.16s}
+.intro .hero-data li:nth-child(4){animation-delay:1.22s}
+.intro .hero-data li:nth-child(5){animation-delay:1.28s}
+@keyframes linea{from{clip-path:inset(-20% 100% -20% -5%);translate:0 .12em}to{clip-path:inset(-20% -5% -20% -5%);translate:0 0}}
+@keyframes asoma{from{opacity:0;translate:0 -6px}}
+@keyframes sube{from{opacity:0;translate:0 10px}}
+@keyframes asienta{from{scale:1.04}}
+@keyframes metro{from{clip-path:inset(-100% 100% -100% 0)}to{clip-path:inset(-100% -2% -100% 0)}}
 /* 2D (Fase 2c) */
 /* regla de gramaje: sustituye el filete superior de la franja de datos del hero */
 .hero-data{border-top:0;padding-top:0}
@@ -322,7 +371,7 @@ a{color:inherit}
 /* menos movimiento: se quita el desplazamiento; los cambios de color y opacidad se mantienen */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .site-header{transition:none}
+  .site-header,.nav a::after{transition:none}
 }
 </style>
 </head>
@@ -357,7 +406,7 @@ a{color:inherit}
   <section class="hero" aria-labelledby="hero-title">
     <img class="hero-art" src="assets/marca/destello-hero.webp" alt="" width="1536" height="1024" fetchpriority="high">
     <div class="hero-copy">
-      <h1 id="hero-title" class="display" lang="en">Heavyweight Oversize Culture.</h1>
+      <h1 id="hero-title" class="display" lang="en"><span class="ln">Heavyweight</span> <span class="ln">Oversize</span> <span class="ln">Culture.</span></h1>
       <p class="lede">310 gramos. Corte boxy u oversize. Tu diseño o el nuestro.</p>
       <div class="hero-actions">
         <a class="btn btn-solid" href="#disena">Diseña la tuya</a>
@@ -822,6 +871,23 @@ a{color:inherit}
 
   // Perfil ligero: una sola capa de parallax en equipos modestos o con ahorro de datos
   if (navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || navigator.connection?.saveData) document.documentElement.classList.add("lite");
+
+  // Revelados al entrar en pantalla: una sola vez y en cascada (80 ms, máx. 400 ms) si entran varios a la vez.
+  // .steps se revela como grupo: sus tarjetas fuera de vista en horizontal no deben quedar esperando un swipe
+  if (document.documentElement.classList.contains("motion")) {
+    const io = new IntersectionObserver(entries => {
+      let i = 0;
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        for (const el of e.target.matches(".steps") ? e.target.children : [e.target]) {
+          el.style.setProperty("--d", Math.min(i++, 5) * 80 + "ms");
+          el.classList.add("in");
+        }
+      }
+    }, { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".section-head .display, .triad span, .closing-tag span, .product, .reg, .steps").forEach(el => io.observe(el));
+  }
 
   // Proceso: flechas y posición (01 / 07)
   const steps = document.querySelector(".steps"), stepPos = document.getElementById("steps-pos");

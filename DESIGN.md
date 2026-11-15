@@ -88,14 +88,19 @@ Escala modular 1.333 (expresiva), base 16px:
 
 | Gesto | Qué hace | Dónde |
 |-------|----------|-------|
-| Racleta | Revela de izquierda a derecha con `clip-path: inset()`, como una pasada de serigrafía | Titulares de sección, tríada del manifiesto, lema del cierre por líneas, foto del índice de líneas |
+| Racleta | Revela de izquierda a derecha con `clip-path: inset()`, como una pasada de serigrafía (.75s, ease-in-out) | Titulares de sección, tríada del manifiesto, lema del cierre por líneas, titular del hero (entrada), foto del índice de líneas (ligada al scroll) |
 | Registro | Marcas de registro SVG que se dibujan (`stroke-dashoffset`) al entrar | Fichas del Drop, fotos de técnica |
+| Metro | La regla de gramaje se estira como una cinta métrica y después caen sus cifras | Hero (entrada) |
 | Peso | Cae unos px y asienta, sin rebote | Fichas del Drop, tarjetas del proceso |
 | Parallax | 2 capas en el hero: el arte baja más lento que el scroll, el texto sube un poco | Hero |
+| Tinta en la nav | Al pasar el ratón (o con foco), una franja blanca cruza el enlace e invierte el texto (`mix-blend-mode: difference`); sale hacia la derecha. .22s / .18s | Nav del header, ≥768px |
 | Header | Se oculta al bajar y vuelve al subir; nunca con el menú abierto o con foco dentro | Global |
 
 Reglas:
-- CSS ligado al scroll (`animation-timeline: scroll()/view()`) dentro de `@supports` y `@media (prefers-reduced-motion: no-preference)`; fuera de eso se ve el estado final, quieto.
+- **Parallax** e índice de líneas: ligados al scroll (`animation-timeline`), dentro de `@supports`.
+- **Revelados** (racleta, registro, peso): por tiempo, disparados al entrar en pantalla (IntersectionObserver) y una sola vez; en cascada de 80 ms (máx. 400 ms) si entran varios a la vez. Ligados al scroll se perdían al bajar rápido.
+- **Entrada** (header + hero, ~1,5 s): solo la primera carga de la sesión (`sessionStorage`). Todo es clicable desde el primer instante. La foto del hero es el LCP: nunca parte invisible, solo se asienta (escala 1.04 → 1).
+- El script del `<head>` pone `.motion` (y `.intro`) antes del primer pintado, salvo con "reducir movimiento" o sin IntersectionObserver: entonces se ve todo quieto en su estado final.
 - Solo `transform/translate`, `opacity` y `clip-path` (más `stroke-dashoffset` en las marcas pequeñas). Nada de blur, sombras ni `font-stretch` animados.
 - Un solo listener de scroll (el header). Sin scroll suave, sin scroll horizontal fijado, sin preloader.
 - Tokens: entrada `.5s cubic-bezier(.16,1,.3,1)`; UI `.2s cubic-bezier(.4,0,.2,1)`.
@@ -104,7 +109,7 @@ Reglas:
 ## Layout
 **Grid:** fluido de 12 columnas, márgenes `clamp(16px, 4vw, 56px)`, gutter 24px.
 **Base:** 8px. Escala: xs 4 · sm 8 · md 16 · lg 24 · xl 32 · 2xl 48 · 3xl 64 · 4xl 96 · 5xl 144.
-Alineación a la izquierda. Secciones alternan negro / hueso. Radio: 999px solo en botones píldora y chips; 0 en
+Alineación a la izquierda (excepción: en celular, el bloque superior del footer va centrado sobre el logo). Secciones alternan negro / hueso. Radio: 999px solo en botones píldora y chips; 0 en
 fotos y paneles (fotografía a sangre, como el PDF).
 
 ## Depth

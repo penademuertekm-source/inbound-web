@@ -28,7 +28,7 @@ Demostración funcional de la idea de la marca: el cliente coloca gráficos de I
 propia imagen sobre una camiseta en 3D, en móvil y en PC. Necesita servirse por HTTP (ver abajo): con doble clic (`file://`) el navegador bloquea los módulos locales de three.js.
 
 - **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
-- **Diseño:** gráficos de la marca, colección INBOUND para DTF (6 diseños del cliente en `disenos-cliente.js`), frase propia e imagen subida; se arrastran sobre la tela y se escalan con las esquinas azules o el control de tamaño, con rotación.
+- **Diseño:** gráficos de la marca, colección INBOUND para DTF (6 diseños del cliente en `prototipo-3d/disenos/`, con miniaturas para los botones), frase propia e imagen subida; se arrastran sobre la tela y se escalan con las esquinas azules o el control de tamaño, con rotación.
 - **Área imprimible:** el gráfico se proyecta de frente (como la placa de la prensa) y no puede salir del área de impresión; si no cabe, se reduce. Así no se corta en la costura de la manga.
 - **Validación:** área imprimible, resolución de imágenes (150 ppp mínimo), contraste con la prenda y técnica (serigrafía, DTF o alta densidad).
 - **Herramientas (como la app de referencia):** deshacer / rehacer (también Ctrl+Z / Ctrl+Y), voltear el gráfico, girar la prenda 360° y compartir la imagen desde el móvil.
@@ -39,8 +39,8 @@ Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT), copia local en `prot
 **Modelo 3D:** [«T Shirt»](https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba) de funlab117,
 licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (permite uso comercial citando al autor).
 Se adaptó con `herramientas/preparar_camiseta_sketchfab.py` (Blender 5): sin capas interiores, enderezado,
-centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. `camiseta-glb.js` es el mismo modelo empaquetado
-para cargarlo sin una petición aparte. El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
+centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. El modelo se descarga como binario (`camiseta.glb`) en paralelo con three.js; los diseños se bajan solo al añadirlos.
+El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
 
 **Limitaciones del prototipo:** el modelo es de corte regular, no oversize; para la versión comercial conviene
 comprar o encargar un modelo con los patrones de INBOUND (CLO3D / Marvelous Designer). Sin paso de IA ni pedido online.

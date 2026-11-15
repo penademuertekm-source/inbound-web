@@ -83,13 +83,19 @@ a{color:inherit}
 .nav a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;white-space:nowrap}
 /* nav en fila (tableta y ordenador): "pasada de racleta" al pasar el ratón o con foco de teclado.
    Una franja de tinta cruza el enlace de izquierda a derecha, el texto se invierte (difference) y al salir sigue hacia la derecha */
+/* Se anima con clip-path (bordes izquierdo y derecho por separado), no con scaleX + cambio de transform-origin:
+   cambiar el origen a mitad de la animación hacía saltar la franja y dejaba un trozo blanco al pasar rápido el cursor.
+   Reposo: plegada a la izquierda. Entra: crece hacia la derecha. Sale (.out): se pliega hacia la derecha.
+   Al terminar de salir, el script la devuelve sin animar a la izquierda (invisible en ambos extremos) */
 @media (min-width:768px){
   .nav a{position:relative}
-  .nav a::after{content:"";position:absolute;inset:9px -8px;background:var(--white);mix-blend-mode:difference;transform:scaleX(0);transform-origin:right;transition:transform .18s cubic-bezier(.23,1,.32,1);pointer-events:none}
-  .nav a:focus-visible::after{transform:scaleX(1);transform-origin:left;transition-duration:.22s}
+  .nav a::after{content:"";position:absolute;inset:9px -8px;background:var(--white);mix-blend-mode:difference;clip-path:inset(0 100% 0 0);transition:clip-path .22s cubic-bezier(.23,1,.32,1);pointer-events:none}
+  .nav a.out::after{clip-path:inset(0 0 0 100%);transition-duration:.18s}
+  .nav a.reset::after{transition:none}
+  .nav a:focus-visible::after{clip-path:inset(0)}
 }
 @media (min-width:768px) and (hover:hover) and (pointer:fine){
-  .nav a:hover::after{transform:scaleX(1);transform-origin:left;transition-duration:.22s}
+  .nav a:hover::after{clip-path:inset(0)}
 }
 .header-cta{min-height:40px;padding:0 18px;font-size:15px}
 .menu-btn{display:none}
@@ -371,7 +377,7 @@ a{color:inherit}
 /* menos movimiento: se quita el desplazamiento; los cambios de color y opacidad se mantienen */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .site-header,.nav a::after{transition:none}
+  .site-header,.nav a::after{transition:none!important}
 }
 </style>
 </head>
@@ -657,7 +663,7 @@ a{color:inherit}
     <div class="closing-inner">
       <svg class="logo-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
       <p class="closing-tag"><span>No necesitas perseguir la atención.</span> <span>La atención llega a ti.</span></p>
-      <a class="cta-glow" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
+      <a class="cta-glow" href="https://www.instagram.com/inbound.st/" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
     </div>
     <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>
   </section>
@@ -868,6 +874,20 @@ a{color:inherit}
     lastY = y;
   }, { passive: true });
   header.addEventListener("focusin", () => header.classList.remove("hide"));
+
+  // Tinta de la nav: sale hacia la derecha y, ya invisible, vuelve sin animar a la izquierda para la próxima entrada.
+  // Si el cursor vuelve a mitad de la salida, :hover gana y la franja crece desde donde esté (sin saltos)
+  header.querySelectorAll(".nav a").forEach(a => {
+    const out = () => a.classList.add("out");
+    a.addEventListener("pointerleave", out);
+    a.addEventListener("blur", out);
+    a.addEventListener("transitionend", () => {
+      if (!a.classList.contains("out") || a.matches(":hover, :focus-visible")) return;
+      a.classList.add("reset"); a.classList.remove("out");
+      void a.offsetWidth;   // aplica el salto sin transición antes de reactivarla
+      a.classList.remove("reset");
+    });
+  });
 
   // Perfil ligero: una sola capa de parallax en equipos modestos o con ahorro de datos
   if (navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || navigator.connection?.saveData) document.documentElement.classList.add("lite");

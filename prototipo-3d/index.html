@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Diseña en 3D | INBOUND STUDIO (prototipo)</title>
-<meta name="description" content="Prototipo: coloca gráficos y frases sobre una camiseta INBOUND en 3D.">
+<title>Diseña en 3D | INBOUND STUDIO</title>
+<meta name="description" content="Coloca gráficos, frases o tu propia imagen sobre una camiseta INBOUND en 3D.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080808'/%3E%3Ctext x='16' y='24' font-family='Arial' font-weight='900' font-size='22' text-anchor='middle' fill='%23FFFFFF'%3EI%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="../assets/fuentes/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!-- el modelo se pide desde el primer momento, en paralelo con three.js (los módulos no se precargan aquí:
@@ -31,7 +31,6 @@ body{background:var(--white);color:var(--ink);font-family:var(--font);font-size:
 
 .top{display:flex;align-items:center;gap:16px;padding:10px var(--gutter);background:var(--ink);color:var(--white)}
 .logo{font-stretch:125%;font-weight:900;font-size:18px;text-decoration:none;color:inherit;min-height:44px;display:inline-flex;align-items:center}
-.badge{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 12px;font-stretch:72%;font-weight:600;font-size:13px}
 .top a.back{margin-left:auto;color:inherit;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;border-bottom:1.5px solid transparent}
 .top a.back:hover{border-color:currentColor}
 
@@ -116,7 +115,6 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 <body>
 <header class="top">
   <a class="logo" href="../index.html" aria-label="INBOUND, volver al inicio">INBOUND</a>
-  <span class="badge">Prototipo 3D</span>
   <a class="back label" href="../index.html#disena">Volver a la web</a>
 </header>
 
@@ -141,7 +139,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   <aside class="panel" aria-label="Herramientas de diseño">
     <div>
       <h1>Diseña tu INBOUND en 3D</h1>
-      <p class="intro muted">Prototipo de demostración: elige la prenda, añade gráficos de la marca, tu frase o tu imagen y colócalos donde quieras.</p>
+      <p class="intro muted">Elige la prenda, añade gráficos de la marca, tu frase o tu imagen y colócalos donde quieras.</p>
     </div>
 
     <div class="block">
@@ -213,7 +211,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <button class="btn" type="button" id="share" hidden>Compartir</button>
       <a class="btn" href="../index.html#disena">Volver a la web</a>
     </div>
-    <p class="hint">Modelos 3D: <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-regular-fit-tshirt">«Male regular fit tshirt»</a> y <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-oversized-tshirt">«Male oversized tshirt»</a> de fashion3designn (CGTrader, Royalty Free License). Adaptados para este prototipo; el corte Oversize es una versión alargada del segundo.</p>
+    <p class="hint">Modelos 3D: <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-regular-fit-tshirt">«Male regular fit tshirt»</a> y <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-oversized-tshirt">«Male oversized tshirt»</a> de fashion3designn (CGTrader, Royalty Free License). Adaptados para este estudio; el corte Oversize es una versión alargada del segundo.</p>
   </aside>
 </main>
 
@@ -298,7 +296,12 @@ controls.target.copy(TARGET); controls.enableDamping = true; controls.enablePan 
 controls.minPolarAngle = Math.PI * 0.2; controls.maxPolarAngle = Math.PI * 0.8;
 
 const shirt = new THREE.Group(); scene.add(shirt);
-const fabric = new THREE.MeshPhysicalMaterial({ color: COLORS[0].hex, roughness: 0.9, sheen: 1, sheenRoughness: 0.8, sheenColor: new THREE.Color(0x262626), side: THREE.DoubleSide });
+const fabric = new THREE.MeshPhysicalMaterial({ color: COLORS[0].hex, roughness: 0.9, sheen: 1, sheenRoughness: 0.8, sheenColor: new THREE.Color(0x262626) });
+// Interior de la prenda (cara de atrás de cada pieza): mismo tejido en sombra. Con un solo material de doble cara,
+// three.js iluminaba el interior como el exterior y, al mirar dentro de una manga o del cuello, parecía un hueco claro
+const fabricInner = new THREE.MeshStandardMaterial({ roughness: 1, side: THREE.BackSide, envMapIntensity: 0.25 });
+const tintInner = () => fabricInner.color.copy(fabric.color).multiplyScalar(0.3);
+tintInner();
 const panels = [];
 const state = { color: COLORS[0], cut: 'Oversize', view: 'front' };
 const layers = [];
@@ -657,7 +660,7 @@ COLORS.forEach((c, i) => colorBox.insertAdjacentHTML('beforeend',
   `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${i}" ${i === 0 ? 'checked' : ''} aria-label="${c.name}"><span></span></label>`));
 colorBox.addEventListener('change', async (e) => {
   state.color = COLORS[+e.target.value];
-  fabric.color.set(state.color.hex); invalidate();
+  fabric.color.set(state.color.hex); tintInner(); invalidate();
   for (const l of layers) if (!l.fixedInk) await paint(l);
   refreshChecks();
 });
@@ -830,7 +833,8 @@ const cutCache = {};
 const gltf = new GLTFLoader();
 function loadCut(cut) {
   return cutCache[cut] ??= new Promise((res, rej) => gltf.load(CUTS[cut].file, (g) => {
-    g.scene.traverse(o => { if (o.isMesh) o.material = fabric; });   // solo Frente y Espalda reciben diseños
+    const meshes = []; g.scene.traverse(o => { if (o.isMesh) meshes.push(o); });
+    for (const o of meshes) { o.material = fabric; o.add(new THREE.Mesh(o.geometry, fabricInner)); }   // exterior + interior en sombra; solo Frente y Espalda reciben diseños
     res(g.scene);
   }, undefined, rej));
 }

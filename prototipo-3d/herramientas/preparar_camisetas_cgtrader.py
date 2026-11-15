@@ -57,6 +57,10 @@ def classify(o):
     c, area, vs = meta[o]
     if area < MIN_AREA:
         return None
+    # cinta interior del cuello trasero ("... Copy ..." en CLO): va por dentro y, con menos polígonos, atravesaba la
+    # espalda y se veía como una mancha clara bajo el cuello
+    if any("Copy" in (o.data.materials[p.material_index].name if o.data.materials else "") for p in o.data.polygons[:50]):
+        return None
     if o in big:
         return "Frente" if c.y < cy else "Espalda"
     if c.z > top - 0.12 and abs(c.x - cx) < 0.13:
@@ -123,9 +127,10 @@ for name in ("Frente", "Espalda", "Mangas", "Cuello"):
     final[name] = m
 
 if ALARGAR:
-    # Oversize: el cuerpo por debajo de la sisa crece ~10 cm y las mangas ~20 % hacia el puño.
-    # La sisa y todo lo de arriba no se mueven, así que hombros, cuello y costuras siguen encajando.
-    sisa = min(v.co.z for v in final["Mangas"].data.vertices) + 0.02
+    # Oversize: el cuerpo crece ~10 cm desde 3 cm por DEBAJO de la axila y las mangas ~25 % hacia el puño.
+    # Antes el estiramiento empezaba 2 cm por encima del punto más bajo de la sisa: el cuerpo bajaba hasta 7 mm junto a la
+    # axila y se abría un hueco entre cuerpo y manga. Ahora la sisa entera y todo lo de arriba quedan quietos.
+    sisa = min(v.co.z for v in final["Mangas"].data.vertices) - 0.03
     bajo = min(v.co.z for n in ("Frente", "Espalda") for v in final[n].data.vertices)
     k = (sisa - bajo + 0.10) / (sisa - bajo)
     for n in ("Frente", "Espalda"):
@@ -154,6 +159,8 @@ if ALARGAR:
                 v.co += axis * t * 0.25
     print(f"CAMISETA alargada: k_cuerpo={k:.2f} sisa_z={sisa:.3f}")
 
+# Reducir polígonos pieza por pieza. (Probado: soldar las costuras y reducir todo junto dejaba dientes en los puños
+# y no cerraba más las costuras, porque CLO deja las piezas solapadas unos milímetros.)
 for name, m in final.items():
     ratio = min(1.0, TARGET[name] / max(1, len(m.data.polygons)))
     if ratio < 1:
@@ -163,6 +170,84 @@ for name, m in final.items():
     m.data.materials.clear(); m.data.materials.append(mat)
     for p in m.data.polygons:
         p.use_smooth = True
+
+# Alisar pliegues: al reducir polígonos, algún triángulo puede quedar dado la vuelta (normal a más de 110° de las
+# de sus vecinos). En la Normal pasaba en la espalda bajo el cuello y se veía como una mancha clara. Se relajan esos
+# vértices y su entorno (sin tocar bordes) hasta que no quede ninguno. Solo en Frente y Espalda: en mangas y cuello hay
+# dobleces reales (puño vuelto, ribete) que tienen ángulos así a propósito y no se deben alisar
+import math as _m
+for name in ("Frente", "Espalda"):
+    m = final[name]
+    bm = bmesh.new(); bm.from_mesh(m.data)
+    for ronda in range(12):
+        bm.normal_update()
+        bad = set()
+        for f in bm.faces:
+            nb = [g for e in f.edges for g in e.link_faces if g is not f]
+            if nb:
+                avg = sum((g.normal for g in nb), Vector())
+                if avg.length > 1e-9 and _m.degrees(f.normal.angle(avg, 0)) > 110:
+                    bad.update(f.verts)
+        if not bad:
+            break
+        ring = set(bad)
+        for v in bad:
+            for e in v.link_edges:
+                ring.add(e.other_vert(v))
+        movable = [v for v in ring if not any(e.is_boundary for e in v.link_edges)]
+        bmesh.ops.smooth_vert(bm, verts=movable, factor=0.6, use_axis_x=True, use_axis_y=True, use_axis_z=True)
+    print(f"CAMISETA pliegues {name}: {len(bad)} vértices sin resolver tras {ronda + 1} rondas")
+    bm.to_mesh(m.data); bm.free()
+
+# Cerrar costuras: cada vértice de borde que queda a menos de 8 mm de otra pieza se pega a su superficie.
+# CLO deja rendijas pequeñas entre piezas (y la reducción de polígonos las agranda); en la costura lateral del bajo o
+# junto al cuello se veía el fondo. Los bordes que de verdad son aberturas (bajo, puños, cuello) quedan más lejos y no se tocan
+from mathutils.bvhtree import BVHTree
+CIERRE = 0.008
+for name, m in final.items():
+    others = [o for n, o in final.items() if n != name]
+    verts, polys, off = [], [], 0
+    for o in others:
+        verts += [v.co.copy() for v in o.data.vertices]
+        polys += [[i + off for i in poly.vertices] for poly in o.data.polygons]
+        off += len(o.data.vertices)
+    tree = BVHTree.FromPolygons(verts, polys)
+    bm = bmesh.new(); bm.from_mesh(m.data)
+    moved = 0
+    for v in bm.verts:
+        if any(e.is_boundary for e in v.link_edges):
+            hit = tree.find_nearest(v.co)
+            if hit[0] is not None and hit[3] < CIERRE:
+                v.co = hit[0]; moved += 1
+    bm.to_mesh(m.data); bm.free()
+    print(f"CAMISETA costura {name}: {moved} vértices pegados")
+
+# Todas las piezas con la cara exterior hacia fuera (el estudio pinta el interior más oscuro con BackSide).
+# Por cada isla (cada manga, cada capa del cuello…): orientación coherente y, si la mayoría de su área mira hacia el
+# eje vertical del cuerpo, se invierte
+def radial_out(f):
+    c = f.calc_center_median(); r = Vector((c.x, c.y, 0))
+    return f.normal.dot(r.normalized()) * f.calc_area() if r.length > 1e-4 else 0.0
+
+
+for name, m in final.items():
+    bm = bmesh.new(); bm.from_mesh(m.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    seen = set()
+    for f0 in bm.faces:
+        if f0.index in seen:
+            continue
+        isle, stack = [], [f0]
+        seen.add(f0.index)
+        while stack:
+            f = stack.pop(); isle.append(f)
+            for e in f.edges:
+                for g in e.link_faces:
+                    if g.index not in seen:
+                        seen.add(g.index); stack.append(g)
+        if sum(radial_out(f) for f in isle) < 0:
+            bmesh.ops.reverse_faces(bm, faces=isle)
+    bm.to_mesh(m.data); bm.free()
 
 # Normales hacia fuera: frente hacia -Y, espalda hacia +Y (en Blender)
 for name, sign in (("Frente", -1), ("Espalda", 1)):

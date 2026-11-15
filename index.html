@@ -724,10 +724,11 @@ a{color:inherit}
       `<label class="chip swatch" style="--c:${c.hex}"><input type="radio" name="color" value="${c.name}" ${i === 0 ? "checked" : ""} aria-label="${c.name}"><span></span></label>`);
   });
 
-  // Siluetas: normal = hombro en su sitio, manga corta y alta; oversize = más ancha y larga, hombro caído;
+  // Siluetas (calcadas de los modelos 3D del estudio): normal = proporción 0,65 ancho/largo, hombro en su sitio y manga
+  // que cae a ~40°; oversize = más ancha y larga, hombro caído;
   // boxy = la más ancha y la más corta. hw = medio ancho, len = largo, sl = manga, arm = sisa, cuff = puño (exterior/interior)
   const CUTS = {
-    "Normal":   { hw: 114, len: 400, sl: 58, arm: 108, cuffOut: 92,  cuffIn: 132, hint: "Corte clásico: hombro en su sitio y largo de siempre." },
+    "Normal":   { hw: 124, len: 380, sl: 76, arm: 112, cuffOut: 88,  cuffIn: 130, hint: "Corte clásico: hombro en su sitio y largo de siempre." },
     "Oversize": { hw: 132, len: 410, sl: 82, arm: 128, cuffOut: 120, cuffIn: 168, hint: "Holgada y larga, con el hombro caído." },
     "Boxy fit": { hw: 150, len: 370, sl: 70, arm: 128, cuffOut: 120, cuffIn: 168, hint: "Ancha y corta, de caída recta y cuadrada." },
   };

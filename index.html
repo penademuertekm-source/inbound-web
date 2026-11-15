@@ -423,7 +423,7 @@ a{color:inherit}
   <section class="section light" aria-labelledby="manifiesto-title">
     <div class="manifesto">
       <div class="manifesto-copy">
-        <h2 id="manifiesto-title" class="triad"><span>Entra.</span><span>Impacta.</span><span>Trasciende.</span></h2>
+        <h2 id="manifiesto-title" class="triad"><span>Entra.</span> <span>Impacta.</span> <span>Trasciende.</span></h2>
         <p class="lede muted">INBOUND es ropa pesada hecha en Colombia para quien no pide permiso. Algodón que se siente, cortes amplios y gráficos que no pasan desapercibidos.</p>
         <p class="h3" lang="en">Own your style.</p>
       </div>
@@ -656,7 +656,7 @@ a{color:inherit}
   <section class="closing" aria-label="Comprar">
     <div class="closing-inner">
       <svg class="logo-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><use href="#logo-inbound"/></svg>
-      <p class="closing-tag"><span>No necesitas perseguir la atención.</span><span>La atención llega a ti.</span></p>
+      <p class="closing-tag"><span>No necesitas perseguir la atención.</span> <span>La atención llega a ti.</span></p>
       <a class="cta-glow" href="https://ig.me/m/inbound.st" target="_blank" rel="noopener">Compra ahora <svg class="cta-arrow" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8H20M13 1.5L20 8L13 14.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>
     </div>
     <p class="closing-meta">Inbound<span aria-hidden="true">|</span>Streetwear<span aria-hidden="true">|</span>Est. 2025</p>
@@ -873,20 +873,25 @@ a{color:inherit}
   if (navigator.deviceMemory <= 4 || navigator.hardwareConcurrency <= 4 || navigator.connection?.saveData) document.documentElement.classList.add("lite");
 
   // Revelados al entrar en pantalla: una sola vez y en cascada (80 ms, máx. 400 ms) si entran varios a la vez.
+  // Se observa siempre un contenedor sin recortar: el navegador mide la intersección DESPUÉS del clip-path,
+  // así que un texto recortado (racleta en estado inicial) puede no "entrar" nunca y quedarse invisible.
   // .steps se revela como grupo: sus tarjetas fuera de vista en horizontal no deben quedar esperando un swipe
   if (document.documentElement.classList.contains("motion")) {
+    const parts = el =>
+      el.matches(".section-head") ? el.querySelectorAll(".display") :
+      el.matches(".triad, .closing-tag, .steps") ? el.children : [el];
     const io = new IntersectionObserver(entries => {
       let i = 0;
       for (const e of entries) {
         if (!e.isIntersecting) continue;
         io.unobserve(e.target);
-        for (const el of e.target.matches(".steps") ? e.target.children : [e.target]) {
+        for (const el of parts(e.target)) {
           el.style.setProperty("--d", Math.min(i++, 5) * 80 + "ms");
           el.classList.add("in");
         }
       }
     }, { rootMargin: "0px 0px -10% 0px" });
-    document.querySelectorAll(".section-head .display, .triad span, .closing-tag span, .product, .reg, .steps").forEach(el => io.observe(el));
+    document.querySelectorAll(".section-head, .triad, .closing-tag, .product, .reg, .steps").forEach(el => io.observe(el));
   }
 
   // Proceso: flechas y posición (01 / 07)

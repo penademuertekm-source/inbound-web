@@ -119,6 +119,7 @@ Plano. Sin sombras. La jerarquía se construye con contraste negro/hueso, tamañ
 ### Do
 - Usar las fotos reales de la marca (taller, prendas, empaque) a sangre y en escala de grises/oscuras.
 - Expresar jerarquía con el eje de anchura de Archivo, no con más familias.
+- Puntuación: los claims de marca terminan en punto, como sentencias (*Culture.*, *Own your style.*, *Entra. Impacta. Trasciende.*), igual que los titulares del deck del cliente; los títulos de sección y la navegación van sin punto. En titulares partidos en `<span>` por línea, dejar un espacio entre spans para que el texto se lea bien (lectores de pantalla, buscadores).
 - Numerar solo lo que es secuencia (los 7 pasos del proceso).
 - Usar el beige solo como detalle cálido, nunca como fondo de sección.
 - Escribir en español, frases cortas, verbos claros ("Diseña tu camiseta", "Copiar pedido").

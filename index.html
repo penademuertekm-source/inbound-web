@@ -261,9 +261,10 @@ a{color:inherit}
 .footer-mark{display:block;width:100%;height:auto;color:var(--white)}
 .footer-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s2);color:var(--gray)}
 @media (min-width:860px){.footer-cols{grid-template-columns:2fr 1fr 1fr}}
-/* celular: bloque centrado sobre el logo (que ocupa todo el ancho); Explora y Pedidos lado a lado para no alargar la columna */
-@media (max-width:599px){
-  .footer-cols{grid-template-columns:1fr 1fr;column-gap:var(--s2);text-align:center}
+/* celular y tableta: bloque centrado sobre el logo (que ocupa todo el ancho); Explora y Pedidos lado a lado para no alargar la columna.
+   Columnas de 16rem como máximo y centradas: en tableta, con 1fr cada una quedaban a un cuarto del borde, demasiado separadas */
+@media (max-width:859px){
+  .footer-cols{grid-template-columns:repeat(2,minmax(0,16rem));justify-content:center;column-gap:var(--s3);text-align:center}
   .footer-claim{grid-column:1 / -1}
   .footer-cols ul{justify-items:center}
 }

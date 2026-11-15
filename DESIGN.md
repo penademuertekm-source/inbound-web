@@ -109,7 +109,7 @@ Reglas:
 ## Layout
 **Grid:** fluido de 12 columnas, márgenes `clamp(16px, 4vw, 56px)`, gutter 24px.
 **Base:** 8px. Escala: xs 4 · sm 8 · md 16 · lg 24 · xl 32 · 2xl 48 · 3xl 64 · 4xl 96 · 5xl 144.
-Alineación a la izquierda (excepción: en celular, el bloque superior del footer va centrado sobre el logo). Secciones alternan negro / hueso. Radio: 999px solo en botones píldora y chips; 0 en
+Alineación a la izquierda (excepción: en celular y tableta, por debajo de 860 px, el bloque superior del footer va centrado sobre el logo). Secciones alternan negro / hueso. Radio: 999px solo en botones píldora y chips; 0 en
 fotos y paneles (fotografía a sangre, como el PDF).
 
 ## Depth

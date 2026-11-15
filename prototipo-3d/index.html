@@ -9,7 +9,7 @@
 <link rel="preload" href="../assets/fuentes/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <!-- el modelo se pide desde el primer momento, en paralelo con three.js (los módulos no se precargan aquí:
      un modulepreload antes del importmap rompe la resolución de 'three') -->
-<link rel="preload" href="camiseta.glb" as="fetch" crossorigin>
+<link rel="preload" href="camiseta-oversize.glb" as="fetch" crossorigin>
 <style>
 /* Fuentes servidas desde el propio sitio (SIL OFL 1.1): sin peticiones a Google */
 @font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; src: url(../assets/fuentes/archivo-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
@@ -149,9 +149,11 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <fieldset>
         <legend class="label">Corte</legend>
         <div class="chips">
+          <label class="chip"><input type="radio" name="corte" value="Normal"><span>Normal</span></label>
           <label class="chip"><input type="radio" name="corte" value="Oversize" checked><span>Oversize</span></label>
           <label class="chip"><input type="radio" name="corte" value="Boxy fit"><span>Boxy fit</span></label>
         </div>
+        <p class="hint" id="corte-hint" aria-live="polite">Holgada y larga, con el hombro caído.</p>
       </fieldset>
       <fieldset style="margin-top:16px">
         <legend class="label">Color</legend>
@@ -211,7 +213,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <button class="btn" type="button" id="share" hidden>Compartir</button>
       <a class="btn" href="../index.html#disena">Volver a la web</a>
     </div>
-    <p class="hint">Modelo 3D: <a href="https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba">«T Shirt»</a> de funlab117, licencia <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Adaptado (reducido y reorientado) para este prototipo.</p>
+    <p class="hint">Modelos 3D: <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-regular-fit-tshirt">«Male regular fit tshirt»</a> y <a href="https://www.cgtrader.com/free-3d-models/character/clothing/male-oversized-tshirt">«Male oversized tshirt»</a> de fashion3designn (CGTrader, Royalty Free License). Adaptados para este prototipo; el corte Oversize es una versión alargada del segundo.</p>
   </aside>
 </main>
 
@@ -232,12 +234,22 @@ const COLORS = [
   { name: 'Gris', hex: '#858585', dark: true },
   { name: 'Beige', hex: '#D6D0C5', dark: false },
 ];
-// Área imprimible en coordenadas de la pieza (metros; 0,0 = centro del cuello)
-// x = medio ancho. Medido sobre el modelo: más allá de ±13 cm la tela gira hacia el costado (el diseño se estira 2–6 veces)
-// y en el lado izquierdo, más caído, ni siquiera hay tela de frente. Con ±16 cm los diseños grandes se deformaban o se cortaban
-const PRINT = { Frente: { x: 0.13, yMin: -0.64, yMax: -0.1 }, Espalda: { x: 0.13, yMin: -0.66, yMax: -0.06 } };
+// Área imprimible por corte y pieza (metros; 0,0 = punto más alto del cuello; x = medio ancho). Medida sobre cada modelo:
+// zona donde la tela mira de frente (el diseño se estira menos de un 30 %); por fuera de ella la tela gira o tiene pliegues
+const PRINT_BY_CUT = {
+  'Normal':   { Frente: { x: 0.11, yMin: -0.62, yMax: -0.10 }, Espalda: { x: 0.12, yMin: -0.64, yMax: -0.08 } },
+  'Oversize': { Frente: { x: 0.13, yMin: -0.64, yMax: -0.10 }, Espalda: { x: 0.17, yMin: -0.70, yMax: -0.08 } },
+  'Boxy fit': { Frente: { x: 0.13, yMin: -0.56, yMax: -0.10 }, Espalda: { x: 0.17, yMin: -0.60, yMax: -0.08 } },
+};
+let PRINT = PRINT_BY_CUT['Oversize'];
 const MIN_DPI = 150;
-const CUTS = { 'Oversize': [1, 1, 1], 'Boxy fit': [1.08, 0.93, 1.04] };
+// Cada corte es un modelo propio (no se estira uno solo). Modelos de fashion3designn (CGTrader); Oversize es la Boxy fit
+// alargada en Blender (herramientas/preparar_camisetas_cgtrader.py)
+const CUTS = {
+  'Normal':   { file: 'camiseta-normal.glb',   hint: 'Corte clásico: hombro en su sitio y largo de siempre.' },
+  'Oversize': { file: 'camiseta-oversize.glb', hint: 'Holgada y larga, con el hombro caído.' },
+  'Boxy fit': { file: 'camiseta-boxy.glb',     hint: 'Ancha y corta, de caída recta y cuadrada.' },
+};
 const LOGO_SVG = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" class="logo-mark" viewBox="0 0 143.8 24" role="img" aria-label="INBOUND"><style>.logo-mark{fill:${fill}}.logo-mark .s{fill:none;stroke:${fill};stroke-width:3.4}</style><rect x="0.0" y="0" width="3.4" height="24"/><rect x="7.8" y="0" width="3.4" height="24"/><rect x="23.4" y="0" width="3.4" height="24"/><polygon points="12.5,0 16.9,0 22.1,24 17.7,24"/><rect x="31.2" y="0" width="3.4" height="24"/><path class="s" d="M35.9,1.7 H42.9 a5.6,5.6 0 0 1 5.6,5.6 V6.4 a5.6,5.6 0 0 1 -5.6,5.6 H35.9 M35.9,13.7 H43.5 a5.6,5.6 0 0 1 5.6,5.6 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H35.9"/><rect class="s" x="56.3" y="1.7" width="15.6" height="20.6" rx="5.6"/><path class="s" d="M79.7,0 V16.7 a5.6,5.6 0 0 0 5.6,5.6 H89.7 a5.6,5.6 0 0 0 5.6,-5.6 V0"/><rect x="101.4" y="0" width="3.4" height="24"/><rect x="117.0" y="0" width="3.4" height="24"/><polygon points="106.1,0 110.5,0 115.7,24 111.3,24"/><rect x="124.8" y="0" width="3.4" height="24"/><path class="s" d="M129.5,1.7 H133.5"/><path class="s" d="M142.1,6.7 V16.7 a5.6,5.6 0 0 1 -5.6,5.6 H129.5"/></svg>`;
 
 // ---------- Funciones puras (validación) ----------
@@ -569,7 +581,7 @@ function restore(s) {
   for (const l of layers) if (!s.some(x => x.l === l)) scene.remove(l.mesh);
   layers.length = 0;
   for (const x of s) {
-    Object.assign(x.l, { cm: x.cm, rot: x.rot, flip: x.flip, panel: x.panel, localPos: x.pos.clone(), localNormal: x.normal.clone() });
+    Object.assign(x.l, { cm: x.cm, rot: x.rot, flip: x.flip, panel: panels.find(p => p.name === x.panel.name) || x.panel, localPos: x.pos.clone(), localNormal: x.normal.clone() });   // la pieza del modelo actual (puede haber cambiado de corte)
     applyFlip(x.l); layers.push(x.l);
     if (!x.l.mesh.parent) scene.add(x.l.mesh);
     rebuild(x.l);
@@ -649,9 +661,12 @@ colorBox.addEventListener('change', async (e) => {
   for (const l of layers) if (!l.fixedInk) await paint(l);
   refreshChecks();
 });
-document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('change', () => {
-  state.cut = i.value; shirt.scale.set(...CUTS[i.value]); layers.forEach(rebuild); invalidate(); refreshChecks();
-}));
+document.querySelectorAll('input[name=corte]').forEach(i => i.addEventListener('change', () => showCut(i.value)));
+// el modelo de un corte se pide al pasar el ratón o enfocar su botón, para que el cambio sea inmediato
+document.querySelectorAll('input[name=corte]').forEach(i => {
+  i.closest('label').addEventListener('pointerenter', () => loadCut(i.value), { once: true });
+  i.addEventListener('focus', () => loadCut(i.value), { once: true });
+});
 
 for (const [id, g] of Object.entries(GRAPHICS)) {
   const b = document.createElement('button');
@@ -702,7 +717,7 @@ function select(layer) {
   refreshUI();
 }
 const size = $('size'), rot = $('rot');
-function syncSize() { size.value = selected.cm; $('size-out').value = `${selected.cm} cm`; }
+function syncSize() { size.max = Math.floor(PRINT[selected.panel.name].x * 200); size.value = selected.cm; $('size-out').value = `${selected.cm} cm`; }   // tope = ancho imprimible de esa pieza en ese corte
 size.addEventListener('input', () => { if (!selected) return; selected.cm = +size.value; fit(selected); syncSize(); queueRebuild(selected); refreshChecks(); });
 rot.addEventListener('input', () => { if (!selected) return; selected.rot = +rot.value; $('rot-out').value = `${rot.value}°`; fit(selected); syncSize(); queueRebuild(selected); refreshChecks(); });
 size.addEventListener('change', () => selected && commit());
@@ -751,7 +766,7 @@ function refreshUI() {
   $('undo').disabled = !past.length; $('redo').disabled = !future.length;
   if (selected) {
     $('flip').setAttribute('aria-pressed', String(selected.flip));
-    size.value = selected.cm; $('size-out').value = `${selected.cm} cm`;
+    syncSize();
     rot.value = selected.rot; $('rot-out').value = `${selected.rot}°`;
   }
   refreshChecks();
@@ -809,22 +824,47 @@ if (navigator.canShare && navigator.canShare({ files: [probeFile] })) {
   });
 }
 
-// ---------- Cargar la camiseta ----------
-// sin esperar a la fuente: el modelo (binario .glb, 540 KB) se pide ya y se muestra en cuanto llega
-{
-  new GLTFLoader().load('camiseta.glb', (g) => {
-    // solo Frente y Espalda reciben diseños; Mangas y Cuello son visuales
-    g.scene.traverse(o => { if (o.isMesh) { o.material = fabric; if (PRINT[o.name]) panels.push(o); } });
-    console.assert(panels.length === 2, 'el modelo debe tener las piezas Frente y Espalda');
-    shirt.add(g.scene); invalidate();
-    shirt.updateMatrixWorld(true);
-    loading.hidden = true;
-    refreshUI();
-    window.__inbound = { layers, panels, addLayer, GRAPHICS, select, undo, redo, controls, renderer }; // para pruebas
-  }, undefined, () => {
-    loading.innerHTML = '<p>No se pudo cargar el modelo 3D. Revisa tu conexión y vuelve a cargar la página.</p>';
-  });
+// ---------- Cargar la camiseta (un modelo por corte) ----------
+// Cada .glb se descarga una vez y queda en memoria; el del corte inicial se pide desde el primer momento (preload)
+const cutCache = {};
+const gltf = new GLTFLoader();
+function loadCut(cut) {
+  return cutCache[cut] ??= new Promise((res, rej) => gltf.load(CUTS[cut].file, (g) => {
+    g.scene.traverse(o => { if (o.isMesh) o.material = fabric; });   // solo Frente y Espalda reciben diseños
+    res(g.scene);
+  }, undefined, rej));
 }
+let cutReq = 0;
+async function showCut(cut) {
+  const req = ++cutReq;
+  state.cut = cut;
+  const hint = $('corte-hint'); if (hint.textContent !== CUTS[cut].hint) hint.textContent = CUTS[cut].hint;
+  if (!loading.hidden || !cutCache[cut]) { loading.hidden = false; loading.innerHTML = '<p>Cargando la camiseta…</p>'; }
+  let model;
+  try { model = await loadCut(cut); } catch {
+    loading.hidden = false;
+    loading.innerHTML = '<p>No se pudo cargar el modelo 3D. Revisa tu conexión y vuelve a cargar la página.</p>';
+    return;
+  }
+  if (req !== cutReq) return;          // el usuario ya eligió otro corte mientras este cargaba
+  shirt.clear(); shirt.add(model); shirt.updateMatrixWorld(true);
+  panels.length = 0;
+  model.traverse(o => { if (o.isMesh && (o.name === 'Frente' || o.name === 'Espalda')) panels.push(o); });
+  console.assert(panels.length === 2, 'el modelo debe tener las piezas Frente y Espalda');
+  PRINT = PRINT_BY_CUT[cut];
+  // los diseños pasan a la prenda nueva en la misma posición relativa, ajustados a su área imprimible
+  for (const l of layers) {
+    const name = l.panel.name;
+    const hit = defaultHit(name, l.localPos.x, l.localPos.y) || defaultHit(name, 0, -0.3);
+    if (hit) setPose(l, hit);
+    fit(l); rebuild(l);
+  }
+  loading.hidden = true;
+  if (selected) syncSize();
+  invalidate(); refreshUI();
+  window.__inbound = { layers, panels, addLayer, GRAPHICS, select, undo, redo, controls, renderer, showCut, state }; // para pruebas
+}
+showCut(state.cut);
 </script>
 </body>
 </html>

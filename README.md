@@ -27,7 +27,7 @@ prototipo-3d/       Prototipo del diseñador 3D (ver abajo)
 Demostración funcional de la idea de la marca: el cliente coloca gráficos de INBOUND, su frase o su
 propia imagen sobre una camiseta en 3D, en móvil y en PC. Necesita servirse por HTTP (ver abajo): con doble clic (`file://`) el navegador bloquea los módulos locales de three.js.
 
-- **Prenda:** corte Oversize / Boxy fit y los 4 colores de la guía de identidad.
+- **Prenda:** tres cortes, cada uno con su propio modelo 3D (Normal, Oversize y Boxy fit), y los 4 colores de la guía de identidad.
 - **Diseño:** gráficos de la marca, colección INBOUND para DTF (6 diseños del cliente en `prototipo-3d/disenos/`, con miniaturas para los botones), frase propia e imagen subida; se arrastran sobre la tela y se escalan con las esquinas azules o el control de tamaño, con rotación.
 - **Área imprimible:** el gráfico se proyecta de frente (como la placa de la prensa) y no puede salir del área de impresión; si no cabe, se reduce. Así no se corta en la costura de la manga.
 - **Validación:** área imprimible, resolución de imágenes (150 ppp mínimo), contraste con la prenda y técnica (serigrafía, DTF o alta densidad).
@@ -36,14 +36,15 @@ propia imagen sobre una camiseta en 3D, en móvil y en PC. Necesita servirse por
 
 Tecnología: [three.js](https://threejs.org) 0.186.1 (MIT), copia local en `prototipo-3d/vendor/three/` (sin CDN ni compilación). Licencias en `LICENSES.md`.
 
-**Modelo 3D:** [«T Shirt»](https://sketchfab.com/3d-models/t-shirt-c1a3e5eb9b5445f4b7d4be82f1127eba) de funlab117,
-licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (permite uso comercial citando al autor).
-Se adaptó con `herramientas/preparar_camiseta_sketchfab.py` (Blender 5): sin capas interiores, enderezado,
-centrado y reducido de ~240 mil a ~23 mil triángulos (550 KB). El estudio solo dibuja cuando algo cambia. El modelo se descarga como binario (`camiseta.glb`) en paralelo con three.js; los diseños se bajan solo al añadirlos.
-El original no está en el repositorio: se descarga desde Sketchfab con una cuenta gratuita.
+**Modelos 3D:** [«Male regular fit tshirt»](https://www.cgtrader.com/free-3d-models/character/clothing/male-regular-fit-tshirt) (Normal) y
+[«Male oversized tshirt»](https://www.cgtrader.com/free-3d-models/character/clothing/male-oversized-tshirt) (Boxy fit), de fashion3designn en CGTrader,
+Royalty Free License (no AI): uso personal y comercial. El corte Oversize es la Boxy fit alargada (cuerpo y mangas).
+Se adaptan con `herramientas/preparar_camisetas_cgtrader.py` (Blender 5): capa exterior de cada pieza, sin pespuntes,
+centrado y reducido de 0,8–1,8 millones a ~25 mil caras por corte (`camiseta-normal.glb`, `camiseta-oversize.glb`, `camiseta-boxy.glb`).
+Cada modelo se descarga al elegir su corte (el inicial, desde el primer momento). Los FBX originales no están en el repositorio.
 
-**Limitaciones del prototipo:** el modelo es de corte regular, no oversize; para la versión comercial conviene
-comprar o encargar un modelo con los patrones de INBOUND (CLO3D / Marvelous Designer). Sin paso de IA ni pedido online.
+**Limitaciones del prototipo:** los modelos son genéricos; para la versión comercial conviene
+encargar modelos con los patrones reales de INBOUND (CLO3D / Marvelous Designer). Sin paso de IA ni pedido online.
 
 ## Secciones
 

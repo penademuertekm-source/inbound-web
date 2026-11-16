@@ -11,7 +11,9 @@ Uso (desde prototipo-3d; los FBX son ASCII y solo los lee el importador nuevo de
 Pasos: separa las piezas sueltas, descarta pespuntes y vistas internas (piezas de menos de 4 cm²), de cada pieza
 doble de CLO (cara exterior + cara interior de la tela) conserva la exterior, clasifica Frente / Espalda / Mangas /
 Cuello, centra la prenda (punto más alto del cuello en z=0, frente hacia -Y = +Z en el GLB), opcionalmente la
-alarga (Oversize) y reduce polígonos a un tamaño apto para móvil.
+alarga (Oversize), reduce polígonos a un tamaño apto para móvil, cierra las costuras (pegado + faldón oculto) y copia
+las normales de la malla original en alta para que el sombreado no muestre la reducción.
+DENSIDAD=2 en el entorno duplica las caras (solo para comparar calidad).
 """
 import bpy, bmesh, math, sys
 from mathutils import Vector, Matrix
@@ -19,7 +21,9 @@ from mathutils import Vector, Matrix
 ARGS = sys.argv[sys.argv.index("--") + 1:]
 SRC, OUT = ARGS[:2]
 ALARGAR = len(ARGS) > 2 and ARGS[2] == "alargar"
-TARGET = {"Frente": 9000, "Espalda": 9000, "Mangas": 5000, "Cuello": 1500}   # caras finales por pieza (~25k en total)
+import os
+DENSIDAD = float(os.environ.get("DENSIDAD", "1"))   # multiplicador de caras (pruebas de calidad)
+TARGET = {k: int(v * DENSIDAD) for k, v in {"Frente": 9000, "Espalda": 9000, "Mangas": 5000, "Cuello": 1500}.items()}
 MIN_AREA = 4e-4                                                              # 4 cm²: por debajo son pespuntes o vistas
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -161,8 +165,15 @@ if ALARGAR:
 
 # Reducir polígonos pieza por pieza. (Probado: soldar las costuras y reducir todo junto dejaba dientes en los puños
 # y no cerraba más las costuras, porque CLO deja las piezas solapadas unos milímetros.)
+# Copia en alta (antes de reducir) para pasarle sus normales a la malla final: la reducción deja triángulos largos
+# cuyas normales promediadas dan manchas y rayas claras con el brillo de la tela
+alta = {}
+for name, m in final.items():
+    c = m.copy(); c.data = m.data.copy(); c.name = "alta_" + name
+    bpy.context.scene.collection.objects.link(c); alta[name] = c
 for name, m in final.items():
     ratio = min(1.0, TARGET[name] / max(1, len(m.data.polygons)))
+    print(f"CAMISETA {name}: {len(m.data.polygons)} caras originales")
     if ratio < 1:
         dec = m.modifiers.new("reducir", "DECIMATE"); dec.ratio = ratio
         bpy.context.view_layer.objects.active = m
@@ -258,11 +269,85 @@ for name, sign in (("Frente", -1), ("Espalda", 1)):
         bmesh.ops.reverse_faces(bm, faces=bm.faces)
         bm.to_mesh(m.data); bm.free()
 
+# Faldón bajo las costuras: aunque los bordes de dos piezas coincidan, entre ellos quedan rendijas de décimas de mm
+# (cada borde es una línea quebrada distinta) por las que se veía el interior oscuro: la línea punteada del cuello y
+# las de la sisa. Cada borde de costura se prolonga 5 mm por debajo de la pieza vecina (hundido 1,5 mm hacia dentro),
+# así por la rendija se ve tela de cara exterior y desde fuera el faldón queda oculto. Las aberturas no se tocan.
+FALDON, HUNDIR = 0.002, 0.004
+trees = {}
+for name in final:
+    verts, polys, off = [], [], 0
+    for n, o in final.items():
+        if n != name:
+            verts += [v.co.copy() for v in o.data.vertices]
+            polys += [[i + off for i in poly.vertices] for poly in o.data.polygons]
+            off += len(o.data.vertices)
+    trees[name] = BVHTree.FromPolygons(verts, polys)
+bv, bp, off = [], [], 0
+for n in ("Frente", "Espalda"):
+    bv += [v.co.copy() for v in final[n].data.vertices]
+    bp += [[i + off for i in p.vertices] for p in final[n].data.polygons]
+    off += len(final[n].data.vertices)
+cuerpo = BVHTree.FromPolygons(bv, bp)
+for name, m in final.items():
+    tree = trees[name]
+    bm = bmesh.new(); bm.from_mesh(m.data); bm.normal_update()
+    near = lambda p, d: tree.find_nearest(p)[3] < d
+    seam = [e for e in bm.edges if e.is_boundary and all(near(v.co, 0.0015) for v in e.verts)
+            and near((e.verts[0].co + e.verts[1].co) / 2, 0.003)]
+    dirs = {}
+    for e in seam:
+        a, b = e.verts[0].co, e.verts[1].co
+        ed = (b - a).normalized(); t = (a + b) / 2 - e.link_faces[0].calc_center_median()
+        t -= ed * t.dot(ed)
+        for v in e.verts:
+            dirs[v] = dirs.get(v, Vector()) + t.normalized()
+    # Hacia dentro = contra la normal exterior del cuerpo. En cuello y mangas la normal propia no sirve: tienen capas
+    # vueltas (ribete, puño) cuya cara exterior mira hacia dentro, y su faldón asomaba por fuera del cuerpo
+    if name in ("Frente", "Espalda"):
+        nrm = {v: v.normal.copy() for v in dirs}
+    else:
+        nrm = {v: cuerpo.find_nearest(v.co)[1] for v in dirs}
+    fuera = 0
+    ret = bmesh.ops.extrude_edge_only(bm, edges=seam)
+    for nv in (g for g in ret["geom"] if isinstance(g, bmesh.types.BMVert)):
+        orig = next(x.other_vert(nv) for x in nv.link_edges if x.other_vert(nv) in dirs)
+        nv.co = orig.co + dirs[orig].normalized() * FALDON - nrm[orig] * HUNDIR
+        h = tree.find_nearest(nv.co); fuera += (nv.co - h[0]).dot(h[1]) > 0
+    bm.normal_update()
+    for f in (g for g in ret["geom"] if isinstance(g, bmesh.types.BMFace)):
+        old = next(g for e in f.edges for g in e.link_faces if g is not f and g.index >= 0 and g not in ret["geom"])
+        if f.normal.dot(old.normal) < 0:
+            f.normal_flip()
+    # Suelto del borde: si comparte vértices, el sombreado suave inclina las normales del borde y se ve un reborde claro
+    bmesh.ops.split_edges(bm, edges=seam)
+    bm.to_mesh(m.data); bm.free()
+    print(f"CAMISETA faldón {name}: {len(seam)} aristas de costura, {fuera} vértices asoman")
+
+# Normales de la malla en alta (sombreado como el original de CLO). Las capas vueltas de cuello y puños pueden
+# quedar con la normal contraria a la cara final: esas esquinas se invierten
+for name, m in final.items():
+    dt = m.modifiers.new("normales", "DATA_TRANSFER")
+    dt.object = alta[name]; dt.use_loop_data = True; dt.data_types_loops = {"CUSTOM_NORMAL"}
+    dt.loop_mapping = "POLYINTERP_NEAREST"
+    bpy.context.view_layer.objects.active = m
+    bpy.ops.object.modifier_apply(modifier=dt.name)
+    cn = [l.vector.copy() for l in m.data.corner_normals]
+    flips = 0
+    for p in m.data.polygons:
+        for li in p.loop_indices:
+            if cn[li].dot(p.normal) < 0:
+                cn[li].negate(); flips += 1
+    m.data.normals_split_custom_set(cn)
+    print(f"CAMISETA normales {name}: {flips} esquinas invertidas de {len(cn)}")
+for c in alta.values():
+    bpy.data.objects.remove(c, do_unlink=True)
+
 faces = {n: len(m.data.polygons) for n, m in final.items()}
 fy = sum(v.co.y for v in final["Frente"].data.vertices) / len(final["Frente"].data.vertices)
 by = sum(v.co.y for v in final["Espalda"].data.vertices) / len(final["Espalda"].data.vertices)
 assert fy < by, "el frente debería quedar delante (-Y)"
-assert sum(faces.values()) < 40000, faces
+assert sum(faces.values()) < 40000 * DENSIDAD, faces
 
 bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", export_yup=True)
 fx = [v.co.x for v in final["Frente"].data.vertices]; fz = [v.co.z for v in final["Frente"].data.vertices]

@@ -298,9 +298,12 @@ controls.minPolarAngle = Math.PI * 0.2; controls.maxPolarAngle = Math.PI * 0.8;
 const shirt = new THREE.Group(); scene.add(shirt);
 const fabric = new THREE.MeshPhysicalMaterial({ color: COLORS[0].hex, roughness: 0.9, sheen: 1, sheenRoughness: 0.8, sheenColor: new THREE.Color(0x262626) });
 // Interior de la prenda (cara de atrás de cada pieza): mismo tejido en sombra. Con un solo material de doble cara,
-// three.js iluminaba el interior como el exterior y, al mirar dentro de una manga o del cuello, parecía un hueco claro
-const fabricInner = new THREE.MeshStandardMaterial({ roughness: 1, side: THREE.BackSide, envMapIntensity: 0.25 });
-const tintInner = () => fabricInner.color.copy(fabric.color).multiplyScalar(0.3);
+// three.js iluminaba el interior como el exterior y, al mirar dentro de una manga o del cuello, parecía un hueco claro.
+// Lleva el mismo brillo de tela (sin él, el interior de una prenda oscura era un negro plano, como una tapa) y cede
+// la profundidad ante la cara exterior donde dos piezas se solapan (si no, asomaba en las costuras como puntos oscuros)
+const fabricInner = fabric.clone();
+Object.assign(fabricInner, { side: THREE.BackSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 4 });
+const tintInner = () => { fabricInner.color.copy(fabric.color).multiplyScalar(0.6); fabricInner.sheenColor.copy(fabric.sheenColor).multiplyScalar(0.6); };
 tintInner();
 const panels = [];
 const state = { color: COLORS[0], cut: 'Oversize', view: 'front' };
